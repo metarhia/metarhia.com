@@ -6,7 +6,11 @@
   "dependencies": {
     "impress": "0.4.x"
   },
-  "engines": {
+ "devDependencies": {
+    "eslint": "3.x",
+    "eslint-plugin-impress": "2.x"
+  },
+   "engines": {
     "node": ">=0.6.0"
   }
 }

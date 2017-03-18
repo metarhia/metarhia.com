@@ -13,7 +13,8 @@ const ALPHA = ALPHA_UPPER + ALPHA_LOWER;
 const DIGIT = '0123456789';
 const SYMBOL = '!#$%&()*+,-./:;<=>?@[]^_{|}~';
 const ALPHA_DIGIT = ALPHA + DIGIT;
-const CHARS = ALPHA_DIGIT + SYMBOL;
+const SPACE = ' ';
+const CHARS = ALPHA_DIGIT + SYMBOL + SPACE;
 
 api.dom.on('load', () => {
   //screenConsole = document.getElementById('screenConsole');
@@ -71,12 +72,10 @@ const inputKeyboardEvents = {
 function makeKeyboardClick(char) {
   return (e) => {
     char = e.target.inputChar;
-    console.log('char=' + char);
     if (char === '_') char = ' ';
     let keyName = 'KEY';
     if (char === '<') keyName = 'BACKSPACE';
     if (char === '>') keyName = 'ENTER';
-    console.log('keyName=' + keyName);
     const fn = inputKeyboardEvents[keyName];
     if (fn) fn(char);
     e.stopPropagation();
@@ -149,11 +148,7 @@ document.onkeypress = function(e) {
   if (controlInput.inputActive) {
     const fn = inputKeyboardEvents['KEY'];
     const char = String.fromCharCode(e.keyCode);
-    const isNum = (char >= '0' && char <= '9');
-    const isLower = (char >= 'a' && char <= 'z');
-    const isUpper = (char >= 'A' && char <= 'Z');
-    const isChar = isNum || isLower || isUpper;
-    if (isChar && fn) {
+    if (CHARS.includes(char) && fn) {
       fn(char);
       return false;
     }
@@ -311,22 +306,22 @@ function inputSetValue(value) {
   if (controlInput.inputType === 'masked') {
     value = pad('*', value.length);
   }
+  value = value.replace(/ /g, '&nbsp;');
   controlInput.innerHTML = (
     controlInput.inputPrompt + value + '<span>&block;</span>'
   );
 }
 
-
 let objGeoLocation = 'not detected';
 navigator.geolocation.getCurrentPosition((position) => {
   objGeoLocation = JSON.stringify(position.coords);
   const crd = position.coords;
-  console.log('Your current position is:');
-  console.log('Latitude : ' + crd.latitude);
-  console.log('Longitude: ' + crd.longitude);
-  console.log('More or less ' + crd.accuracy + ' meters.');
+  //console.log('Your current position is:');
+  //console.log('Latitude : ' + crd.latitude);
+  //console.log('Longitude: ' + crd.longitude);
+  //console.log('More or less ' + crd.accuracy + ' meters.');
 }, (err) => {
-  console.warn('ERROR(' + err.code + '): ' + err.message);
+  //console.warn('ERROR(' + err.code + '): ' + err.message);
 }, {
   enableHighAccuracy: true,
   timeout: 5000,
@@ -413,11 +408,14 @@ const commands = {
       print('Uploading ' + fileSelect.files.length + ' file(s)');
       for (let file of fileSelect.files) {
         print(file.name + ' ' + file.size);
-        uploadFile('/api/console/uploadFile.json', file, () => {
-          commandLoop();
-        });
+        uploadFile(file, commandLoop);
       }
     };
+  },
+  download(command) {
+    print('Downloading');
+    const file = command[1];
+    downloadFile(file, commandLoop);
   },
   info() {
     print(
@@ -504,8 +502,6 @@ function command(line) {
   exec(line);
 }
 
-console.log(CHARS.length);
-
 function generateUnique() {
   return generateKey(32, CHARS);
 }
@@ -530,14 +526,19 @@ function pad(padChar, length) {
   return new Array(length + 1).join(padChar);
 }
 
-function uploadFile(url, file, done) {
+function isUploadSupported() {
+  return typeof(new XMLHttpRequest().upload) !== 'undefined';
+}
+
+function uploadFile(file, done) {
+  const url = '/api/console/uploadFile.json';
   const formData = new FormData();
   formData.append(file.name, file);
 
   const xhr = new XMLHttpRequest();
   xhr.open('POST', url, true);
   xhr.onprogress = function (e) {
-    console.dir({ progress: e });
+    // console.dir({ progress: e });
   };
   xhr.onload = function (e) {
     if (e.target) {
@@ -552,4 +553,36 @@ function uploadFile(url, file, done) {
   xhr.send(formData);
 };
 
-// typeof(new XMLHttpRequest().upload) !== 'undefined'
+function downloadFile(file, done) {
+  const url = '/api/console/downloadFile.json?file=' + file;
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', url, true);
+  xhr.responseType = 'blob';
+  xhr.onload = function (e) {
+    if (e.target) {
+      if (e.target.status === 200) {
+        var blob = new Blob(
+          [e.target.response],
+          { type: e.target.responseType }
+        );
+        const a = document.createElement('a');
+        a.style = 'display: none';
+        document.body.appendChild(a);
+        const href = window.URL.createObjectURL(blob);
+        a.href = href;
+        a.download = file;
+        a.click();
+        window.URL.revokeObjectURL(href);
+        print('Download complete');
+      } else {
+        print('File not found');
+      }
+    }
+    done();
+  };
+  xhr.onerror = function (e) {
+    print('Downloading error');
+  };
+  xhr.send();
+};
+

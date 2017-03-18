@@ -16,15 +16,13 @@
     slowTime:  '1s',
     timeout:   '30s',
     keepAlive: '5s',
-    applications: ['metarhia.com']
   },
 
   rpc: {
     protocol:  'jstp',
     transport: 'tcp',
     address:   '*',
-    ports:     [3000, [1]],
-    applications: ['example'],
+    ports:     [3000],
     heartbeat: '2s'
   },
 
@@ -33,7 +31,6 @@
     transport: 'ws',
     address:   '*',
     ports:     [8000],
-    applications: ['example'],
     slowTime:  '1s'
   }
 
