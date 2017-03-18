@@ -1,0 +1,29 @@
+{
+  "name": "metarhia",
+  "version": "2.0.0",
+  "private": true,
+  "author": "Timur Shemsedinov <timur.shemsedinov@gmail.com>",
+  "description": "Metarhia technology stack web site",
+  "license": "MIT",
+  "keywords": [
+    "metarhia",
+    "cloud",
+    "impress",
+    "nodejs",
+    "api",
+    "application",
+    "server"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/metarhia/metarhia.com"
+  },
+  "bugs": {
+    "url": "https://github.com/metarhia/metarhia.com/issues"
+  },
+  "homepage": "https://github.com/metarhia/metarhia.com",
+  "main": "server.js",
+  "engines": {
+    "node": "^12.9 || 14 || 15"
+  }
+}
