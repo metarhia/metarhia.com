@@ -18,14 +18,14 @@
     keepAlive: '5s',
   },
 
-  ssl: {
+  /*ssl: {
     protocol:  'http',
     transport: 'tls',
     address:   '*',
     ports:     [443],
     key:       'metarhia.key',
     cert:      'metarhia.cer'
-  },
+  },*/
 
   /*rpc: {
     protocol:  'jstp',

@@ -22,12 +22,13 @@ api.dom.on('load', () => {
   panelScroll = document.getElementById('panelScroll');
   controlInput = document.getElementById('controlInput');
   controlKeyboard = document.getElementById('controlKeyboard');
+  controlToolbar = document.getElementById('controlToolbar');
   controlBrowse = document.getElementById('controlBrowse');
   //controlBrowseSpacer = document.getElementById('controlBrowseSpacer');
   controlScroll = document.getElementById('controlScroll');
   fileSelect = document.getElementById('fileSelect');
   if (isMobile()) initKeyboard();
-  // else initToolbar();
+  //initToolbar();
   initScroll();
   print(
     '<br>Impress Application Server<br>' +
@@ -312,6 +313,7 @@ function inputSetValue(value) {
   );
 }
 
+/*
 let objGeoLocation = 'not detected';
 navigator.geolocation.getCurrentPosition((position) => {
   objGeoLocation = JSON.stringify(position.coords);
@@ -361,6 +363,7 @@ if ('getBattery' in navigator) {
 } else {
   // API is not supported, fail gracefully.
 }
+*/
 
 function format(obj) {
   let key, val, res = '<table><tr><th>Parameter</th><th>Value</th></tr>';
@@ -585,4 +588,3 @@ function downloadFile(file, done) {
   };
   xhr.send();
 };
-
