@@ -18,20 +18,29 @@
     keepAlive: '5s',
   },
 
-  rpc: {
+  ssl: {
+    protocol:  'http',
+    transport: 'tls',
+    address:   '*',
+    ports:     [443],
+    key:       'metarhia.key',
+    cert:      'metarhia.cer'
+  },
+
+  /*rpc: {
     protocol:  'jstp',
     transport: 'tcp',
     address:   '*',
     ports:     [3000],
     heartbeat: '2s'
-  },
+  },*/
 
-  webRpc: {
+  /*webRpc: {
     protocol:  'jstp',
     transport: 'ws',
     address:   '*',
     ports:     [8000],
     slowTime:  '1s'
-  }
+  }*/
 
 }
