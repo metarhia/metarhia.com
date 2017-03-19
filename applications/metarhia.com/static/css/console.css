@@ -69,7 +69,7 @@ ul,ol {
   position: absolute;
   left: 8px;
   right: 8px;
-  top: 65px;
+  top: 8px;
   bottom: 0;
 }
 #panelScroll {
@@ -161,5 +161,5 @@ ul,ol {
   display: none;
 }
 #controlBrowseSpacer {
-  height: 0;
+  height: 100%;
 }
