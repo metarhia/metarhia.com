@@ -69,7 +69,7 @@ ul,ol {
   position: absolute;
   left: 8px;
   right: 8px;
-  top: 65px;
+  top: 8px;
   bottom: 0;
 }
 #panelScroll {
@@ -132,12 +132,15 @@ ul,ol {
 @keyframes blinker {
   50% { opacity: 0.0; }
 }
-#controlKeyboard, #controlToolbar {
+#controlKeyboard, #controlCommand {
   background: #000;
   position: absolute;
   bottom: 0;
   right: 0;
   left: 0;
+}
+#controlCommand {
+  background: #262626;
 }
 #controlKeyboard .key {
   font-size: 1.4em;
@@ -147,7 +150,10 @@ ul,ol {
   width: 10%;
   height: 25px;
 }
-#controlToolbar .button {
+.caps {
+  text-transform: uppercase;
+}
+#controlCommand .button {
   font-size: 1.4em;
   background: #262626;
   display: inline-block;
@@ -155,11 +161,11 @@ ul,ol {
   float: left;
   padding: 5px 8px;
   cursor: pointer;
-  height: 70px;
+  height: 28px;
 }
 ::-webkit-scrollbar {
   display: none;
 }
 #controlBrowseSpacer {
-  height: 0;
+  height: 100%;
 }

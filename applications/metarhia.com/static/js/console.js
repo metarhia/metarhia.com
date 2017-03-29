@@ -1,12 +1,11 @@
 'use strict';
 
-//let screenConsole, panelConsole;
-let controlInput, controlKeyboard, controlBrowse;
-let controlScroll, controlToolbar;
+let controlKeyboard, controlCommand;
+let controlInput, controlBrowse, controlScroll;
 let ajax, pairingCode, panelScroll;
 let fileSelect;
 
-const METARHIA_VERSION = '0.1.50';
+const METARHIA_VERSION = '0.1.51';
 const ALPHA_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const ALPHA_LOWER = 'abcdefghijklmnopqrstuvwxyz';
 const ALPHA = ALPHA_UPPER + ALPHA_LOWER;
@@ -22,26 +21,23 @@ api.dom.on('load', () => {
   panelScroll = document.getElementById('panelScroll');
   controlInput = document.getElementById('controlInput');
   controlKeyboard = document.getElementById('controlKeyboard');
-  controlToolbar = document.getElementById('controlToolbar');
+  controlCommand = document.getElementById('controlCommand');
   controlBrowse = document.getElementById('controlBrowse');
   //controlBrowseSpacer = document.getElementById('controlBrowseSpacer');
   controlScroll = document.getElementById('controlScroll');
   fileSelect = document.getElementById('fileSelect');
-  if (isMobile()) initKeyboard();
-  //initToolbar();
+  initKeyboard();
+  initCommand();
   initScroll();
-  print(
-    '<br>Impress Application Server<br>' +
-    'Metarhia console v' + METARHIA_VERSION
-  );
+  print('Metarhia console v' + METARHIA_VERSION);
   //application.connect(function() {
-  print('<br>Connected to the server');
-  ajax = api.ajax({
-    signin: { post: '/api/metarhia/signin.json' },
-    pair: { post: '/api/metarhia/pair.json' }
-  });
-  initStorage();
-  commandLoop();
+  //print('<br>Connected to the server');
+  //ajax = api.ajax({
+  //signin: { post: '/api/metarhia/signin.json' },
+  //pair: { post: '/api/metarhia/pair.json' }
+  //});
+  //initStorage();
+  //commandLoop();
   //});
 });
 
@@ -63,7 +59,17 @@ const inputKeyboardEvents = {
     controlInput.inputActive = false;
     controlInput.inputCallback(null, value);
   },
+  CAPS() {
+    if (controlKeyboard.className === 'caps') {
+      controlKeyboard.className = '';
+    } else {
+      controlKeyboard.className = 'caps';
+    }
+  },
   KEY(char) { // Alpha or Digit
+    if (controlKeyboard.className === 'caps') {
+      char = char.toUpperCase();
+    }
     let value = controlInput.inputValue;
     value += char;
     inputSetValue(value);
@@ -77,6 +83,7 @@ function makeKeyboardClick(char) {
     let keyName = 'KEY';
     if (char === '<') keyName = 'BACKSPACE';
     if (char === '>') keyName = 'ENTER';
+    if (char === '^') keyName = 'CAPS';
     const fn = inputKeyboardEvents[keyName];
     if (fn) fn(char);
     e.stopPropagation();
@@ -85,13 +92,14 @@ function makeKeyboardClick(char) {
 }
 
 function initKeyboard() {
-  controlToolbar.style.display = 'none';
+  if (!isMobile()) return;
+  controlCommand.style.display = 'none';
   controlKeyboard.style.display = 'block';
   const KEYBOARD_LAYOUT = [
     '1234567890',
     'qwertyuiop',
     'asdfghjkl<',
-    'zxcvbnm_ >'
+    '^zxcvbnm_>'
   ];
   let i, j, char, keyboardClick;
   let keyboardLine, elementKey, elementLine;
@@ -115,6 +123,12 @@ function initKeyboard() {
   controlBrowse.style.bottom = controlKeyboard.offsetHeight + 'px';
 }
 
+function showKeyboard() {
+  if (!isMobile()) return;
+  controlCommand.style.display = 'none';
+  controlKeyboard.style.display = 'block';
+  controlBrowse.style.bottom = controlKeyboard.offsetHeight + 'px';
+}
 
 const KEY_CODE = {
   BACKSPACE: 8, TAB: 9, ENTER: 13, PAUSE: 19, ESC: 27, SPACE: 32,
@@ -197,49 +211,56 @@ function isMobile() {
   );
 }
 
-const toolbarEvents = {
-  main() {
-    print('main');
+const commandList = {
+  clear() {
+    clear();
+    //controlBrowse.scrollTop = controlBrowse.scrollHeight;
+    scrollBottom();
   },
-  index() {
-    command('index');
+  upload() {
+    exec('upload');
+  },
+  download() {
+    input('command', 'download ', (err, key) => {
+      exec('download ' + key);
+    });
   },
   who() {
-    command('who');
+    exec('who');
   },
   pair() {
-    command('pair');
-  },
-  info() {
-    command('info');
-  },
-  keys() {
-    print('keys');
+    exec('pair');
   }
 };
 
-function initToolbar() {
+function initCommand() {
   controlKeyboard.style.display = 'none';
-  controlToolbar.style.display = 'block';
-  const TOOLBAR_BUTTONS = Object.keys(toolbarEvents);
+  controlCommand.style.display = 'block';
+  const buttons = Object.keys(commandList);
   let i, button, elementButton;
-  for (i = 0; i < TOOLBAR_BUTTONS.length; i++) {
-    button = TOOLBAR_BUTTONS[i];
+  for (i = 0; i < buttons.length; i++) {
+    button = buttons[i];
     elementButton = document.createElement('div');
-    controlToolbar.appendChild(elementButton);
+    controlCommand.appendChild(elementButton);
     elementButton.innerHTML = button;
     elementButton.buttonName = button;
     elementButton.className = 'button';
-    elementButton.style.opacity = (i % 2) ? 0.8 : 1;
+    elementButton.style.backgroundColor = (i % 2) ? '#262626' : '#161616';
     elementButton.addEventListener('click', (e) => {
       const button = e.target.buttonName;
-      const fn = toolbarEvents[button];
+      const fn = commandList[button];
       if (fn) fn();
       e.stopPropagation();
       return false;
     });
   }
-  controlBrowse.style.bottom = controlToolbar.offsetHeight + 'px';
+  controlBrowse.style.bottom = controlCommand.offsetHeight + 'px';
+}
+
+function showCommand() {
+  controlKeyboard.style.display = 'none';
+  controlCommand.style.display = 'block';
+  controlBrowse.style.bottom = controlCommand.offsetHeight + 'px';
 }
 
 function initStorage() {
@@ -252,8 +273,9 @@ function initStorage() {
       print(
         'Local storage found<br>Last activity: ' + lastActivity.toUTCString()
       );
-      if (localStorage['meta.id']) print('System ready');
-      else {
+      if (localStorage['meta.id']) {
+        //print('System ready');
+      } else {
         localStorage['meta.id'] = generateUnique();
         print('New id generated');
       }
@@ -281,6 +303,17 @@ function enterKey() {
   });
 }
 
+function clear() {
+  const elements = controlBrowse.children;
+  let i, element;
+  for (i = elements.length - 1; i > 1 ; i--) {
+    element = elements[i];
+    //if (element.id === '') {
+    controlBrowse.removeChild(element);
+    //}
+  }
+}
+
 function print(s) {
   const element = document.createElement('div');
   element.innerHTML = s;
@@ -290,6 +323,7 @@ function print(s) {
 }
 
 function input(type, prompt, callback) {
+  showKeyboard();
   controlInput.style.display = 'none';
   controlBrowse.removeChild(controlInput);
   controlInput.inputActive = true;
@@ -485,24 +519,20 @@ const commands = {
 };
 
 function commandLoop() {
-  input('command', '.', (err, line) => {
+  /*input('command', '.', (err, line) => {
     exec(line);
     commandLoop();
-  });
+  });*/
 }
 
 function exec(line) {
+  //print(line);
   const command = line.split(' ');
   const cmd = command[0];
   const fn = commands[cmd];
   if (fn) fn(command);
   else print('command not found');
   return !!fn;
-}
-
-function command(line) {
-  print('.' + line);
-  exec(line);
 }
 
 function generateUnique() {
