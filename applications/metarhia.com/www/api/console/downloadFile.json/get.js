@@ -8,5 +8,9 @@
     application.dir + '/files/' +
     prefix1 + '/' + prefix2 + '/' + fileName
   );
-  client.download(filePath, attachmentName, callback);
+  console.dir({ attachmentName, filePath, fileName });
+  client.download(filePath, attachmentName, () => {
+    console.log('Unlink it!');
+    api.fs.unlink(filePath, callback);
+  });
 }

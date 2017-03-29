@@ -26,20 +26,17 @@ api.dom.on('load', () => {
   //controlBrowseSpacer = document.getElementById('controlBrowseSpacer');
   controlScroll = document.getElementById('controlScroll');
   fileSelect = document.getElementById('fileSelect');
-  if (isMobile()) initKeyboard();
+  initKeyboard();
   initCommand();
   initScroll();
-  print(
-    '<br>Impress Application Server<br>' +
-    'Metarhia console v' + METARHIA_VERSION
-  );
+  print('Metarhia console v' + METARHIA_VERSION);
   //application.connect(function() {
   //print('<br>Connected to the server');
-  ajax = api.ajax({
-    signin: { post: '/api/metarhia/signin.json' },
-    pair: { post: '/api/metarhia/pair.json' }
-  });
-  initStorage();
+  //ajax = api.ajax({
+  //signin: { post: '/api/metarhia/signin.json' },
+  //pair: { post: '/api/metarhia/pair.json' }
+  //});
+  //initStorage();
   //commandLoop();
   //});
 });
@@ -62,7 +59,17 @@ const inputKeyboardEvents = {
     controlInput.inputActive = false;
     controlInput.inputCallback(null, value);
   },
+  CAPS() {
+    if (controlKeyboard.className === 'caps') {
+      controlKeyboard.className = '';
+    } else {
+      controlKeyboard.className = 'caps';
+    }
+  },
   KEY(char) { // Alpha or Digit
+    if (controlKeyboard.className === 'caps') {
+      char = char.toUpperCase();
+    }
     let value = controlInput.inputValue;
     value += char;
     inputSetValue(value);
@@ -76,6 +83,7 @@ function makeKeyboardClick(char) {
     let keyName = 'KEY';
     if (char === '<') keyName = 'BACKSPACE';
     if (char === '>') keyName = 'ENTER';
+    if (char === '^') keyName = 'CAPS';
     const fn = inputKeyboardEvents[keyName];
     if (fn) fn(char);
     e.stopPropagation();
@@ -84,13 +92,14 @@ function makeKeyboardClick(char) {
 }
 
 function initKeyboard() {
-  controlCommand.style.display = 'block';
+  if (!isMobile()) return;
+  controlCommand.style.display = 'none';
   controlKeyboard.style.display = 'block';
   const KEYBOARD_LAYOUT = [
     '1234567890',
     'qwertyuiop',
     'asdfghjkl<',
-    'zxcvbnm_ >'
+    '^zxcvbnm_>'
   ];
   let i, j, char, keyboardClick;
   let keyboardLine, elementKey, elementLine;
@@ -114,6 +123,12 @@ function initKeyboard() {
   controlBrowse.style.bottom = controlKeyboard.offsetHeight + 'px';
 }
 
+function showKeyboard() {
+  if (!isMobile()) return;
+  controlCommand.style.display = 'none';
+  controlKeyboard.style.display = 'block';
+  controlBrowse.style.bottom = controlKeyboard.offsetHeight + 'px';
+}
 
 const KEY_CODE = {
   BACKSPACE: 8, TAB: 9, ENTER: 13, PAUSE: 19, ESC: 27, SPACE: 32,
@@ -242,6 +257,12 @@ function initCommand() {
   controlBrowse.style.bottom = controlCommand.offsetHeight + 'px';
 }
 
+function showCommand() {
+  controlKeyboard.style.display = 'none';
+  controlCommand.style.display = 'block';
+  controlBrowse.style.bottom = controlCommand.offsetHeight + 'px';
+}
+
 function initStorage() {
   if (!window.localStorage) {
     print('Local storage is not available.<br>Unsupported device.');
@@ -302,6 +323,7 @@ function print(s) {
 }
 
 function input(type, prompt, callback) {
+  showKeyboard();
   controlInput.style.display = 'none';
   controlBrowse.removeChild(controlInput);
   controlInput.inputActive = true;
