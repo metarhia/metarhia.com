@@ -2,7 +2,7 @@
 
 let controlKeyboard, controlCommand;
 let controlInput, controlBrowse, controlScroll;
-let ajax, pairingCode, panelScroll;
+let ajax, ws, pairingCode, panelScroll, chat;
 let fileSelect;
 
 const METARHIA_VERSION = '0.1.51';
@@ -33,15 +33,12 @@ api.dom.on('load', () => {
     '<br>Impress Application Server<br>' +
     'Metarhia console v' + METARHIA_VERSION
   );
-  //application.connect(function() {
-  //print('<br>Connected to the server');
   ajax = api.ajax({
     signin: { post: '/api/metarhia/signin.json' },
     pair: { post: '/api/metarhia/pair.json' }
   });
   initStorage();
-  //commandLoop();
-  //});
+  ws = api.ws('/api/console/connect.ws');
 });
 
 const inputKeyboardEvents = {
@@ -213,8 +210,10 @@ const commandList = {
   who() {
     exec('who');
   },
-  pair() {
-    exec('pair');
+  chat() {
+    input('room', 'chat ', (err, key) => {
+      exec('chat ' + key);
+    });
   }
 };
 
@@ -493,8 +492,26 @@ const commands = {
         }
       });
     });
+  },
+  chat(command) {
+    chat = { room: command[1] || generateKey(4, DIGIT) };
+    print('Chat room: ' + chat.room);
+    ws.send(JSON.stringify(chat));
+    ws.on('message', (event) => {
+      const msg = JSON.parse(event.data);
+      print(msg.chat);
+    });
+    chatLoop();
   }
 };
+
+function chatLoop() {
+  input('message', '>', (err, line) => {
+    ws.send(JSON.stringify({ chat: line }));
+    if (line === 'bye') print('Room closed');
+    else chatLoop();
+  });
+}
 
 function commandLoop() {
   /*input('command', '.', (err, line) => {
