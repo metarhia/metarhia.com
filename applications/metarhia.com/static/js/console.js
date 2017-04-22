@@ -604,34 +604,30 @@ function uploadFile(file, done) {
 };
 
 function downloadFile(file, done) {
-  const url = '/api/console/downloadFile.json?file=' + file;
-  const xhr = new XMLHttpRequest();
-  xhr.open('GET', url, true);
-  xhr.responseType = 'blob';
-  xhr.onload = function (e) {
-    if (e.target) {
-      if (e.target.status === 200) {
-        var blob = new Blob(
-          [e.target.response],
-          { type: e.target.responseType }
-        );
-        const a = document.createElement('a');
-        a.style = 'display: none';
-        document.body.appendChild(a);
-        const href = window.URL.createObjectURL(blob);
-        a.href = href;
-        a.download = file;
-        a.click();
-        window.URL.revokeObjectURL(href);
-        print('Download complete');
-      } else {
+  const req = { download: file };
+  ws.send(JSON.stringify(req));
+  let res;
+  ws.on('message', (event) => {
+    if (!res) {
+      res = event.data;
+      if (res.file === 'error') {
         print('File not found');
+        done();
       }
+    } else {
+      const blob = new Blob(
+        [event.data],
+        { type: 'application/octet-binary' }
+      );
+      const a = document.createElement('a');
+      a.style = 'display: none';
+      document.body.appendChild(a);
+      const href = window.URL.createObjectURL(blob);
+      a.href = href;
+      a.download = file;
+      a.click();
+      window.URL.revokeObjectURL(href);
+      print('Download complete');
     }
-    done();
-  };
-  xhr.onerror = function (e) {
-    print('Downloading error');
-  };
-  xhr.send();
+  });
 };
