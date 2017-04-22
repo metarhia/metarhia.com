@@ -150,6 +150,9 @@ ul,ol {
   width: 10%;
   height: 25px;
 }
+.caps {
+  text-transform: uppercase;
+}
 #controlCommand .button {
   font-size: 1.4em;
   background: #262626;
