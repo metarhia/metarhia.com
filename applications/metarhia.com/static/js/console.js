@@ -581,26 +581,12 @@ function isUploadSupported() {
 }
 
 function uploadFile(file, done) {
-  const url = '/api/console/uploadFile.json';
-  const formData = new FormData();
-  formData.append(file.name, file);
-
-  const xhr = new XMLHttpRequest();
-  xhr.open('POST', url, true);
-  xhr.onprogress = function (e) {
-    // console.dir({ progress: e });
-  };
-  xhr.onload = function (e) {
-    if (e.target) {
-      const data = JSON.parse(e.target.response);
-      print('Storage code: ' + data.storageCode);
-      done();
-    }
-  };
-  xhr.onerror = function (e) {
-    print('Uploading error');
-  };
-  xhr.send(formData);
+  const req = { upload: file.name };
+  console.dir({ file });
+  ws.send(JSON.stringify(req));
+  const data = file.slice();
+  console.dir({ data });
+  ws.send(data);
 };
 
 function downloadFile(file, done) {
