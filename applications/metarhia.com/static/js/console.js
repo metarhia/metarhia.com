@@ -581,57 +581,39 @@ function isUploadSupported() {
 }
 
 function uploadFile(file, done) {
-  const url = '/api/console/uploadFile.json';
-  const formData = new FormData();
-  formData.append(file.name, file);
-
-  const xhr = new XMLHttpRequest();
-  xhr.open('POST', url, true);
-  xhr.onprogress = function (e) {
-    // console.dir({ progress: e });
-  };
-  xhr.onload = function (e) {
-    if (e.target) {
-      const data = JSON.parse(e.target.response);
-      print('Storage code: ' + data.storageCode);
-      done();
-    }
-  };
-  xhr.onerror = function (e) {
-    print('Uploading error');
-  };
-  xhr.send(formData);
+  const req = { upload: file.name };
+  console.dir({ file });
+  ws.send(JSON.stringify(req));
+  const data = file.slice();
+  console.dir({ data });
+  ws.send(data);
 };
 
 function downloadFile(file, done) {
-  const url = '/api/console/downloadFile.json?file=' + file;
-  const xhr = new XMLHttpRequest();
-  xhr.open('GET', url, true);
-  xhr.responseType = 'blob';
-  xhr.onload = function (e) {
-    if (e.target) {
-      if (e.target.status === 200) {
-        var blob = new Blob(
-          [e.target.response],
-          { type: e.target.responseType }
-        );
-        const a = document.createElement('a');
-        a.style = 'display: none';
-        document.body.appendChild(a);
-        const href = window.URL.createObjectURL(blob);
-        a.href = href;
-        a.download = file;
-        a.click();
-        window.URL.revokeObjectURL(href);
-        print('Download complete');
-      } else {
+  const req = { download: file };
+  ws.send(JSON.stringify(req));
+  let res;
+  ws.on('message', (event) => {
+    if (!res) {
+      res = event.data;
+      if (res.file === 'error') {
         print('File not found');
+        done();
       }
+    } else {
+      const blob = new Blob(
+        [event.data],
+        { type: 'application/octet-binary' }
+      );
+      const a = document.createElement('a');
+      a.style = 'display: none';
+      document.body.appendChild(a);
+      const href = window.URL.createObjectURL(blob);
+      a.href = href;
+      a.download = file;
+      a.click();
+      window.URL.revokeObjectURL(href);
+      print('Download complete');
     }
-    done();
-  };
-  xhr.onerror = function (e) {
-    print('Downloading error');
-  };
-  xhr.send();
+  });
 };
