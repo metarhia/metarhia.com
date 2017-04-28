@@ -56,7 +56,7 @@
         const fileName = targetDir + '/' + code;
         api.mkdirp(targetDir, () => {
           api.fs.writeFile(fileName, message.binaryData, (err) => {
-            connection.send(JSON.stringify({ code: fileName }));
+            connection.send(JSON.stringify({ code: downloadCode }));
           });
         });
       }

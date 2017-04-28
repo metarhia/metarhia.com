@@ -582,10 +582,13 @@ function isUploadSupported() {
 
 function uploadFile(file, done) {
   const req = { upload: file.name };
-  console.dir({ file });
+  //console.dir({ file });
   ws.send(JSON.stringify(req));
   const data = file.slice();
-  console.dir({ data });
+  ws.on('message', (event) => {
+    const data = JSON.parse(event.data);
+    print('Code: ' + data.code);
+  });
   ws.send(data);
 };
 
