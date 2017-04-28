@@ -4,7 +4,7 @@
     let id, room, me, pal, data;
     application.rooms = application.rooms || {};
     connection.on('message', (message) => {
-      console.dir(message);
+      //console.dir(message);
       if (message.type === 'utf8') {
         data = JSON.parse(message.utf8Data);
         if (data.room) {
@@ -40,7 +40,7 @@
             }
           });
         } else if (data.upload) {
-          console.dir({ data });
+          //console.dir({ data });
         }
       } else if (message.type === 'binary') {
         const ALPHA_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';

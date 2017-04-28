@@ -316,7 +316,7 @@ function clear() {
 function print(s) {
   const element = document.createElement('div');
   element.innerHTML = s;
-  controlBrowse.appendChild(element);
+  controlBrowse.insertBefore(element, controlInput);
   controlBrowse.scrollTop = controlBrowse.scrollHeight;
   scrollBottom();
 }
