@@ -3,9 +3,8 @@
 let controlKeyboard, controlCommand;
 let controlInput, controlBrowse, controlScroll;
 let ajax, ws, pairingCode, panelScroll, chat;
-let fileSelect;
 
-const METARHIA_VERSION = '0.1.51';
+const METARHIA_VERSION = '0.1.52';
 const ALPHA_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const ALPHA_LOWER = 'abcdefghijklmnopqrstuvwxyz';
 const ALPHA = ALPHA_UPPER + ALPHA_LOWER;
@@ -25,7 +24,6 @@ api.dom.on('load', () => {
   controlBrowse = document.getElementById('controlBrowse');
   //controlBrowseSpacer = document.getElementById('controlBrowseSpacer');
   controlScroll = document.getElementById('controlScroll');
-  fileSelect = document.getElementById('fileSelect');
   initKeyboard();
   initCommand();
   initScroll();
@@ -35,8 +33,25 @@ api.dom.on('load', () => {
     pair: { post: '/api/metarhia/pair.json' }
   });
   initStorage();
-  ws = api.ws('/api/console/connect.ws');
+  initConnection();
 });
+
+function initConnection() {
+  if (ws) ws.close();
+  ws = api.ws('/api/console/connect.ws');
+  ws.on('close', initConnection);
+  ws.on('message', (event) => {
+    let data = event.data;
+    if (typeof(data) === 'string') {
+      data = JSON.parse(data);
+    }
+    const once = ws.once;
+    if (once) {
+      ws.once = null;
+      once(data);
+    }
+  });
+};
 
 const inputKeyboardEvents = {
   ESC() {
@@ -438,13 +453,20 @@ const commands = {
     commandLoop();
   },
   upload() {
-    print('Select file: ');
+    const element = document.createElement('form');
+    element.style.visibility = 'hidden';
+    element.innerHTML = '<input id="fileSelect" type="file" />';
+    document.body.appendChild(element);
+    const fileSelect = document.getElementById('fileSelect');
     fileSelect.click();
-    fileSelect.onchange = function(e) {
+    fileSelect.onchange = () => {
       print('Uploading ' + fileSelect.files.length + ' file(s)');
       for (let file of fileSelect.files) {
         print(file.name + ' ' + file.size);
-        uploadFile(file, commandLoop);
+        uploadFile(file, () => {
+          document.body.removeChild(element);
+          commandLoop();
+        });
       }
     };
   },
@@ -519,10 +541,7 @@ const commands = {
     chat = { room: command[1] || generateKey(4, DIGIT) };
     print('Chat room: ' + chat.room);
     ws.send(JSON.stringify(chat));
-    ws.on('message', (event) => {
-      const msg = JSON.parse(event.data);
-      print(msg.chat);
-    });
+    ws.once = (res) => print(res.chat);
     chatLoop();
   }
 };
@@ -581,42 +600,36 @@ function isUploadSupported() {
 }
 
 function uploadFile(file, done) {
+  ws.once = (res) => print('Code: ' + res.code);
   const req = { upload: file.name };
-  //console.dir({ file });
   ws.send(JSON.stringify(req));
   const data = file.slice();
-  ws.on('message', (event) => {
-    const data = JSON.parse(event.data);
-    print('Code: ' + data.code);
-  });
   ws.send(data);
 };
 
 function downloadFile(file, done) {
   const req = { download: file };
-  ws.send(JSON.stringify(req));
-  let res;
-  ws.on('message', (event) => {
-    if (!res) {
-      res = event.data;
-      if (res.file === 'error') {
-        print('File not found');
-        done();
-      }
+  ws.once = (res) => {
+    if (res.file === 'error') {
+      print('File not found');
+      done();
     } else {
-      const blob = new Blob(
-        [event.data],
-        { type: 'application/octet-binary' }
-      );
-      const a = document.createElement('a');
-      a.style = 'display: none';
-      document.body.appendChild(a);
-      const href = window.URL.createObjectURL(blob);
-      a.href = href;
-      a.download = file;
-      a.click();
-      window.URL.revokeObjectURL(href);
-      print('Download complete');
+      ws.once = (res) => {
+        const blob = new Blob(
+          [res], { type: 'application/octet-binary' }
+        );
+        const a = document.createElement('a');
+        a.style = 'display: none';
+        document.body.appendChild(a);
+        const href = window.URL.createObjectURL(blob);
+        a.href = href;
+        a.download = file;
+        a.click();
+        window.URL.revokeObjectURL(href);
+        print('Download complete');
+        done();
+      };
     }
-  });
+  };
+  ws.send(JSON.stringify(req));
 };
