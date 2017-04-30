@@ -33,7 +33,7 @@
     'metasync',
 
     // Additional modules
-    //'mkdirp',
+    'mkdirp',
     //'geoip',
     //'nodemailer',
     //'request',
