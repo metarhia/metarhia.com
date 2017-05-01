@@ -14,6 +14,9 @@ const ALPHA_DIGIT = ALPHA + DIGIT;
 const SPACE = ' ';
 const CHARS = ALPHA_DIGIT + SYMBOL + SPACE;
 
+// 4 bytes reserved for offset
+const FILE_CHUNK_SIZE = 64 * 1024 - 4;
+
 api.dom.on('load', () => {
   //screenConsole = document.getElementById('screenConsole');
   //panelConsole = document.getElementById('panelConsole');
@@ -455,19 +458,29 @@ const commands = {
   upload() {
     const element = document.createElement('form');
     element.style.visibility = 'hidden';
-    element.innerHTML = '<input id="fileSelect" type="file" />';
+    element.innerHTML = '<input id="fileSelect" type="file" multiple />';
     document.body.appendChild(element);
     const fileSelect = document.getElementById('fileSelect');
     fileSelect.click();
     fileSelect.onchange = () => {
-      print('Uploading ' + fileSelect.files.length + ' file(s)');
-      for (let file of fileSelect.files) {
+      const files = Array.from(fileSelect.files);
+      print('Uploading ' + files.length + ' file(s)');
+      files.sort((a, b) => a.size - b.size);
+      let i = 0;
+      function uploadNext() {
+        const file = files[i];
         print(file.name + ' ' + file.size);
         uploadFile(file, () => {
+          print(file.name + ' - upload complete');
+          i++;
+          if (i < files.length) {
+            return uploadNext();
+          }
           document.body.removeChild(element);
           commandLoop();
         });
       }
+      uploadNext();
     };
   },
   download(command) {
@@ -600,11 +613,30 @@ function isUploadSupported() {
 }
 
 function uploadFile(file, done) {
-  ws.once = (res) => print('Code: ' + res.code);
-  const req = { upload: file.name };
+  ws.once = (res) => {
+    print('Code: ' + res.code);
+    done();
+  }
+  const req = { upload: file.size };
   ws.send(JSON.stringify(req));
-  const data = file.slice();
-  ws.send(data);
+  let chunkOffset = 0;
+  const chunkOffsetBinary = new ArrayBuffer(4);
+  const chunkOffsetDataView = new DataView(chunkOffsetBinary);
+  const fileSend = setInterval(() => {
+    if (ws.socket.bufferedAmount === 0) {
+      if (file.size === 0) {
+        clearInterval(fileSend);
+        ws.send(JSON.stringify({ uploadEnd: true }));
+        return;
+      }
+      const fileChunk = file.slice(0, FILE_CHUNK_SIZE);
+      chunkOffsetDataView.setUint32(0, chunkOffset);
+      const toSend = new Blob([chunkOffsetBinary, fileChunk]);
+      ws.send(toSend);
+      chunkOffset += fileChunk.size;
+      file = file.slice(FILE_CHUNK_SIZE);
+    }
+  }, 50);
 };
 
 function downloadFile(file, done) {

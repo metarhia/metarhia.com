@@ -1,10 +1,10 @@
 (client, callback) => {
   const connection = client.websocket.accept();
   if (connection) {
-    let id, room, me, pal, data;
+    let id, room, me, pal, data, buf;
+    let isUploading = false;
     application.rooms = application.rooms || {};
     connection.on('message', (message) => {
-      console.dir(message);
       if (message.type === 'utf8') {
         data = JSON.parse(message.utf8Data);
         if (data.room) {
@@ -40,24 +40,32 @@
             }
           });
         } else if (data.upload) {
+          buf = Buffer.allocUnsafe(data.upload);
+          isUploading = true;
+        } else if (data.uploadEnd) {
+          const ALPHA_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+          const ALPHA_LOWER = 'abcdefghijklmnopqrstuvwxyz';
+          const ALPHA = ALPHA_UPPER + ALPHA_LOWER;
+          const DIGIT = '0123456789';
+          const ALPHA_DIGIT = ALPHA + DIGIT;
+          const folder1 = api.common.generateKey(2, DIGIT);
+          const folder2 = api.common.generateKey(2, DIGIT);
+          const code = api.common.generateKey(8, ALPHA_DIGIT);
+          const targetDir = application.dir + '/files/' + folder1 + '/' + folder2;
+          const downloadCode = folder1 + folder2 + code;
+          const fileName = targetDir + '/' + code;
+          isUploading = false;
+          api.mkdirp(targetDir, () => {
+            api.fs.writeFile(fileName, buf, (err) => {
+              connection.send(JSON.stringify({ code: downloadCode }));
+            });
+          });
         }
       } else if (message.type === 'binary') {
-        const ALPHA_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const ALPHA_LOWER = 'abcdefghijklmnopqrstuvwxyz';
-        const ALPHA = ALPHA_UPPER + ALPHA_LOWER;
-        const DIGIT = '0123456789';
-        const ALPHA_DIGIT = ALPHA + DIGIT;
-        const folder1 = api.common.generateKey(2, DIGIT);
-        const folder2 = api.common.generateKey(2, DIGIT);
-        const code = api.common.generateKey(8, ALPHA_DIGIT);
-        const targetDir = application.dir + '/files/' + folder1 + '/' + folder2;
-        const downloadCode = folder1 + folder2 + code;
-        const fileName = targetDir + '/' + code;
-        api.mkdirp(targetDir, () => {
-          api.fs.writeFile(fileName, message.binaryData, (err) => {
-            connection.send(JSON.stringify({ code: downloadCode }));
-          });
-        });
+        if (isUploading) {
+          const offset = message.binaryData.readUInt32BE(0);
+          message.binaryData.copy(buf, offset, 4);
+        }
       }
     });
   }
