@@ -469,9 +469,10 @@ const commands = {
       let i = 0;
       function uploadNext() {
         const file = files[i];
-        print(file.name + ' ' + file.size);
-        uploadFile(file, () => {
-          print(file.name + ' - upload complete');
+        uploadFile(file, (code) => {
+          print(file.name + ' ' +
+                api.common.bytesToSize(file.size) +
+                ' done, Code: ' + code);
           i++;
           if (i < files.length) {
             return uploadNext();
@@ -614,8 +615,7 @@ function isUploadSupported() {
 
 function uploadFile(file, done) {
   ws.once = (res) => {
-    print('Code: ' + res.code);
-    done();
+    done(res.code);
   }
   const req = { upload: file.size };
   ws.send(JSON.stringify(req));
