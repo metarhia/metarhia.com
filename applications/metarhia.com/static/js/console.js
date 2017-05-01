@@ -323,7 +323,7 @@ function enterKey() {
 function clear() {
   const elements = controlBrowse.children;
   let i, element;
-  for (i = elements.length - 1; i > 1 ; i--) {
+  for (i = elements.length - 2; i > 1 ; i--) {
     element = elements[i];
     //if (element.id === '') {
     controlBrowse.removeChild(element);
