@@ -40,6 +40,21 @@ api.common.random = function(min, max) {
   return min + Math.floor(Math.random() * (max - min + 1));
 };
 
+api.common.bytesToSize = (
+  bytes // number to be converted to size Kb, Mb, Gb and Tb
+) => {
+  if (bytes === 0) return '0';
+  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1000)), 10);
+  return (
+    Math.round(bytes / Math.pow(1000, i), 2) +
+    api.common.bytesToSize.sizes[i]
+  );
+};
+
+api.common.bytesToSize.sizes = [
+  '', ' Kb', ' Mb', ' Gb', ' Tb', ' Pb', ' Eb', ' Zb', ' Yb'
+];
+
 // Simple EventEmitter implementation
 //
 api.events = {};
