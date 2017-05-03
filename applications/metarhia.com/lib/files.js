@@ -1,6 +1,9 @@
 api.files = {};
 
-api.files.attachmentNameToFilePath = (attachmentName) => {
+api.files.attachmentNameToFilePath = (
+  // transofrms attachmentName to file path in filesystem
+  attachmentName // name which can be got from uploadFile
+) => {
   const prefix1 = attachmentName.slice(0, 2);
   const prefix2 = attachmentName.slice(2, 4);
   const fileName = attachmentName.slice(4);
@@ -19,7 +22,15 @@ api.files.attachmentNameToFilePath = (attachmentName) => {
   impress.DIGIT = '0123456789';
   impress.ALPHA_DIGIT = impress.ALPHA + impress.DIGIT;
   
-  api.files.uploadFile = (options, callback) => {
+  api.files.uploadFile = (
+    // Upload file to files folder.
+    options, // <Readable> | { inp: <Readable>, timeout: <string> }. 
+             // Readable is data of the file.
+             // timeout defines time after which remove file
+    callback // <Function> (err, downloadedCode).
+             // downloadedCoded represents file.
+            // Can be passed to downloadFile.
+  ) => {
     let inp, timeout;
     if (options instanceof api.stream.Readable) {
       inp = options;
@@ -48,7 +59,14 @@ api.files.attachmentNameToFilePath = (attachmentName) => {
   };
 }
 
-api.files.addToDeletingTask = (storagePath, timeout) => {
+api.files.addToDeletingTask = (
+  // Remove storagePath from filesystem after timeout.
+  // Task runs every application.tasks.fileDeleteing.interval and check if file is needed to remote
+  storagePath, // path to removing object
+  timeout // timeout for removing.
+          // timeout must be less than config.filestorage.MAX_TIMEOUIT.
+          // If timeout is 0 then config.filestorage.DEFAULT_TIMEOUT is taken. 
+) => {
   const { DEFAULT_TIMEOUT, MAX_TIMEOUT } = application.filestorage;
   timeout = timeout ? Math.min(timeout, MAX_TIMEOUT) : DEFAULT_TIMEOUT;
 
