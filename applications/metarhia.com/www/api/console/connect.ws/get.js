@@ -1,7 +1,7 @@
 (client, callback) => {
   const connection = client.websocket.accept();
   if (connection) {
-    let id, room, me, pal, data, buf;
+    let id, room, me, pal, data, buf, out, readyToRead, readEnded = false;
     let isUploading = false;
     application.rooms = application.rooms || {};
     connection.on('message', (message) => {
@@ -40,31 +40,37 @@
             }
           });
         } else if (data.upload) {
-          buf = Buffer.allocUnsafe(data.upload);
-          isUploading = true;
-        } else if (data.uploadEnd) {
-          const ALPHA_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-          const ALPHA_LOWER = 'abcdefghijklmnopqrstuvwxyz';
-          const ALPHA = ALPHA_UPPER + ALPHA_LOWER;
-          const DIGIT = '0123456789';
-          const ALPHA_DIGIT = ALPHA + DIGIT;
-          const folder1 = api.common.generateKey(2, DIGIT);
-          const folder2 = api.common.generateKey(2, DIGIT);
-          const code = api.common.generateKey(8, ALPHA_DIGIT);
-          const targetDir = application.dir + '/files/' + folder1 + '/' + folder2;
-          const downloadCode = folder1 + folder2 + code;
-          const fileName = targetDir + '/' + code;
-          isUploading = false;
-          api.mkdirp(targetDir, () => {
-            api.fs.writeFile(fileName, buf, (err) => {
-              connection.send(JSON.stringify({ code: downloadCode }));
-            });
+          buf = null;
+          out = new api.stream.Readable({
+            read() {
+              if (buf) {
+                readEnded = this.push(buf);
+                buf = null;
+              }
+              readyToRead = !buf;
+            },
           });
+          isUploading = true;
+          api.files.uploadFile({ inp: out, timeout: 0 }, (_, downloadCode) => {
+            connection.send(JSON.stringify({ code: downloadCode }));
+          });
+        } else if (data.uploadEnd) {
+          if (!readEnded) {
+            out.push(null);
+          }
         }
       } else if (message.type === 'binary') {
-        if (isUploading) {
-          const offset = message.binaryData.readUInt32BE(0);
-          message.binaryData.copy(buf, offset, 4);
+        if (isUploading && !readEnded) {
+          const newChunk = Buffer.from(message.binaryData, 4);
+          if (buf) {
+            buf = Buffer.concat([buf, newChunk]);
+          } else {
+            if (readyToRead) {
+              out.push(newChunk);
+            } else {
+              buf = newChunk;
+            }
+          }
         }
       }
     });

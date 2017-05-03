@@ -19,3 +19,8 @@ application.extNotCompressed = [
   'java', 'm', 'pas', 'dpr', 'prg', 'asp', 'aspx', 'ini', 'asm', 'res',
   'bat', 'cmd', 'exe', 'dll', 'com', 'obj', 'ocx', 'sys', 'msi'
 ];
+
+application.filestorage = {};
+
+application.filestorage.DEFAULT_TIMEOUT = api.common.duration('50h');
+application.filestorage.MAX_TIMEOUT = api.common.duration('5d');
