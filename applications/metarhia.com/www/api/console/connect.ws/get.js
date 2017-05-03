@@ -43,11 +43,11 @@
           buf = null;
           out = new api.stream.Readable({
             read() {
+              readyToRead = !buf;
               if (buf) {
                 readEnded = this.push(buf);
                 buf = null;
               }
-              readyToRead = !buf;
             },
           });
           isUploading = true;
@@ -56,7 +56,14 @@
           });
         } else if (data.uploadEnd) {
           if (!readEnded) {
-            out.push(null);
+            if (readyToRead) {
+              out.push(null);
+            } else {
+              out._read = ((buf) => function() {
+                this.push(buf);
+                this.push(null);
+              })(buf);
+            }
           }
         }
       } else if (message.type === 'binary') {
