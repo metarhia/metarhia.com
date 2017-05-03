@@ -61,7 +61,7 @@
         }
       } else if (message.type === 'binary') {
         if (isUploading && !readEnded) {
-          const newChunk = Buffer.from(message.binaryData, 4);
+          const newChunk = message.binaryData.slice(4);
           if (buf) {
             buf = Buffer.concat([buf, newChunk]);
           } else {
