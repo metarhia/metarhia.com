@@ -68,7 +68,8 @@ api.files.addToDeletingTask = (
           // If timeout is 0 then config.filestorage.DEFAULT_TIMEOUT is taken. 
 ) => {
   const { DEFAULT_TIMEOUT, MAX_TIMEOUT } = application.filestorage;
-  timeout = timeout ? Math.min(timeout, MAX_TIMEOUT) : DEFAULT_TIMEOUT;
+  const dur = api.common.duration;
+  timeout = timeout ? Math.min(dur(timeout), MAX_TIMEOUT) : DEFAULT_TIMEOUT;
 
   application.tasks.fileDeleting.files[storagePath] = {
     uploadTime: Date.now(),
