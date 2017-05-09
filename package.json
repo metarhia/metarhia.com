@@ -1,12 +1,13 @@
 {
   "name": "example",
-  "version": "0.1.52",
+  "version": "0.1.53",
   "private": true,
   "description": "Impress Application Server instance",
   "dependencies": {
+    "bcrypt": "1.0.1",
     "impress": "0.4.x"
   },
- "devDependencies": {
+  "devDependencies": {
     "eslint": "3.x",
     "eslint-plugin-impress": "2.x"
   },

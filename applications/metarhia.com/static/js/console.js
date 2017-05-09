@@ -4,7 +4,7 @@ let controlKeyboard, controlCommand;
 let controlInput, controlBrowse, controlScroll;
 let ajax, ws, pairingCode, panelScroll, chat;
 
-const METARHIA_VERSION = '0.1.52';
+const METARHIA_VERSION = '0.1.53';
 const ALPHA_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const ALPHA_LOWER = 'abcdefghijklmnopqrstuvwxyz';
 const ALPHA = ALPHA_UPPER + ALPHA_LOWER;
@@ -51,8 +51,9 @@ function initConnection() {
     const once = ws.once;
     if (once) {
       ws.once = null;
-      once(data);
+      return once(data);
     }
+    if (ws.receive) ws.receive(data);
   });
 };
 
@@ -555,7 +556,7 @@ const commands = {
     chat = { room: command[1] || generateKey(4, DIGIT) };
     print('Chat room: ' + chat.room);
     ws.send(JSON.stringify(chat));
-    ws.once = (res) => print(res.chat);
+    ws.receive = (res) => print(res.chat);
     chatLoop();
   }
 };
