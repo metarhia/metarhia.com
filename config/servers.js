@@ -27,13 +27,13 @@
     cert:      'metarhia.cer'
   },*/
 
-  /*rpc: {
+  rpc: {
     protocol:  'jstp',
     transport: 'tcp',
     address:   '*',
     ports:     [3000],
     heartbeat: '2s'
-  },*/
+  },
 
   /*webRpc: {
     protocol:  'jstp',
