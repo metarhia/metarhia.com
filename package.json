@@ -11,7 +11,10 @@
     "eslint": "3.x",
     "eslint-plugin-impress": "2.x"
   },
-   "engines": {
+  "scripts": {
+    "lint": "eslint ./"
+  },
+  "engines": {
     "node": ">=0.6.0"
   }
 }
