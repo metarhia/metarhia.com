@@ -20,9 +20,11 @@
 | Emitted when another user joins current chat | `chatJoin` | None |
 | Emitted when chat interlocutor leaves the chat | `chatLeave` | None |
 | Emitted when chat interlocutor sends a message | `message` | `message: String` |
+| Emitted when chat interlocutor starts file transfer | `chatFileTransferStart` | `mimeType: String` |
 | Emitted when chat interlocutor sends file chunk | `chatFileTransferChunk` | `fileChunk: String` |
 | Emitted when chat interlocutor ends file transfer | `chatFileTransferEnd` | None |
-| Emitted after starting a download from server | `downloadFileChunk` | `fileChunk: String` |
+| Emitted when starting a download from server | `downloadFileStart` | `mimeType: String` |
+| Emitted when server sends file chunk | `downloadFileChunk` | `fileChunk: String` |
 | Emitted when file is completely downloaded | `downloadFileEnd` | None |
 
 ### Error codes
