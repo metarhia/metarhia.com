@@ -20,6 +20,8 @@
     connection.emitRemoteEvent('metacom', 'chatJoin', []);
   });
 
+  const hasInterlocutor = chat.size !== 0;
+
   connection.once('close', () => {
     if (connection.chatRoom === room) {
       api.metacom.leaveChat(connection);
@@ -30,5 +32,5 @@
 
   chat.set(connection.sessionId, connection);
 
-  callback();
+  callback(hasInterlocutor);
 }

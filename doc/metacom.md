@@ -4,7 +4,7 @@
 
 | Description | Name | Arguments | Return value | Possible erors |
 |-------------|------|-----------|--------------|----------------|
-| Join chat room | `join` | `room: String` | None | `ERR_ROOM_TAKEN` (30) |
+| Join chat room | `join` | `room: String` | `hasInterlocutor: Boolean` | `ERR_ROOM_TAKEN` (30) |
 | Send message in chat | `send` | `message: String` | None | `ERR_NOT_IN_CHAT` (31), `ERR_NO_INTERLOCUTOR` (32) |
 | Leave chat room | `leave` | None | None | `ERR_NOT_IN_CHAT` (31) |
 | Send next file chunk in chat | `sendFileChunkToChat` | `chunk: String` | None | `ERR_NOT_IN_CHAT` (31), `ERR_NO_INTERLOCUTOR` (32) |
