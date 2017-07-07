@@ -5,6 +5,7 @@
   "description": "Impress Application Server instance",
   "dependencies": {
     "bcrypt": "1.0.1",
+    "file-type": "^5.2.0",
     "impress": "0.4.x"
   },
   "devDependencies": {
