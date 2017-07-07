@@ -34,6 +34,7 @@
 
     // Additional modules
     'mkdirp',
+    'file-type',
     //'geoip',
     //'nodemailer',
     //'request',
