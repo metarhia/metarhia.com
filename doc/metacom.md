@@ -7,6 +7,7 @@
 | Join chat room | `join` | `room: String` | `hasInterlocutor: Boolean` | `ERR_ROOM_TAKEN` (30) |
 | Send message in chat | `send` | `message: String` | None | `ERR_NOT_IN_CHAT` (31), `ERR_NO_INTERLOCUTOR` (32) |
 | Leave chat room | `leave` | None | None | `ERR_NOT_IN_CHAT` (31) |
+| Start file transfer in chat | `startChatFileTransfer` | `mimeType: String` | None | `ERR_NOT_IN_CHAT` (31), `ERR_NO_INTERLOCUTOR` (32) |
 | Send next file chunk in chat | `sendFileChunkToChat` | `chunk: String` | None | `ERR_NOT_IN_CHAT` (31), `ERR_NO_INTERLOCUTOR` (32) |
 | End file transfer in chat | `endChatFileTransfer` | None | None | `ERR_NOT_IN_CHAT` (31), `ERR_NO_INTERLOCUTOR` (32) |
 | Upload next file chunk to server | `uploadFileChunk` | `chunk: String` | None | None |
