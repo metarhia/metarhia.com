@@ -32,5 +32,5 @@
 
   chat.set(connection.sessionId, connection);
 
-  callback(hasInterlocutor);
+  callback(null, hasInterlocutor);
 }
