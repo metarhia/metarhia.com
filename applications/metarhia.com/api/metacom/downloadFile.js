@@ -49,7 +49,7 @@
     while (subchunkStart !== chunk.length) {
       subchunkEnd = Math.min(chunk.length, subchunkStart + subchunkLength);
       connection.emitRemoteEvent('metacom', 'downloadFileChunk',
-        chunk.toString('base64', subchunkStart, subchunkEnd));
+        [chunk.toString('base64', subchunkStart, subchunkEnd)]);
       subchunkStart = subchunkEnd;
     }
   });
