@@ -23,7 +23,7 @@
 
   readStream.on('error', (error) => {
     if (!isOpen) {
-      return callback(api.metacom.errors.ERR_NO_SUCH_FILE);
+      callback(api.metacom.errors.ERR_NO_SUCH_FILE);
     }
     application.log.error(
       `In metacom.downloadFile on reading the file: ${error}`

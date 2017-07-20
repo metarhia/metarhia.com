@@ -5,7 +5,8 @@ api.metacom.errors = Object.assign(Object.create(null), {
   ERR_NOT_IN_CHAT: 31,
   ERR_NO_INTERLOCUTOR: 32,
   ERR_NO_SUCH_FILE: 33,
-  ERR_UPLOAD_NOT_STARTED: 34
+  ERR_UPLOAD_NOT_STARTED: 34,
+  ERR_PREVIOUS_UPLOAD_NOT_FINISHED: 35
 });
 
 api.metacom.chats = new Map();
