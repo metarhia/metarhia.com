@@ -10,7 +10,7 @@
 | Start file transfer in chat | `startChatFileTransfer` | `mimeType: String` | None | `ERR_NOT_IN_CHAT` (31), `ERR_NO_INTERLOCUTOR` (32) |
 | Send next file chunk in chat | `sendFileChunkToChat` | `chunk: String` | None | `ERR_NOT_IN_CHAT` (31), `ERR_NO_INTERLOCUTOR` (32) |
 | End file transfer in chat | `endChatFileTransfer` | None | None | `ERR_NOT_IN_CHAT` (31), `ERR_NO_INTERLOCUTOR` (32) |
-| Upload next file chunk to server | `uploadFileChunk` | `chunk: String` | None | None |
+| Upload next file chunk to server | `uploadFileChunk` | `chunk: String` | None | `ERR_PREVIOUS_UPLOAD_NOT_FINISHED (35)` |
 | End file upload to server | `endFileUpload` | None | `code: String` | `ERR_UPLOAD_NOT_STARTED (34)` |
 | Start file download | `downloadFile` | `code: String` | None | `ERR_NO_SUCH_FILE` (33) |
 
@@ -37,6 +37,7 @@
 | 32   | `ERR_NO_INTERLOCUTOR` | Occurs when user is the only one person in the room. |
 | 33   | `ERR_NO_SUCH_FILE` | Occurs when user tries to download file with incorrect code. |
 | 34   | `ERR_UPLOAD_NOT_STARTED` | Occurs when user tries to finish uploading file to the server without starting it first. |
+| 35   | `ERR_PREVIOUS_UPLOAD_NOT_FINISHED` | Occurs when user tries to upload next file chunk to the server without first receiving callback for the previous chunk. |
 
 ### Additional information
 

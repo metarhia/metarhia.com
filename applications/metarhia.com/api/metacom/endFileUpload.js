@@ -1,7 +1,7 @@
 (callback) => {
-  if (!connection.upload) {
+  if (!connection.isUploading) {
     return callback(api.metacom.errors.ERR_UPLOAD_NOT_STARTED);
   }
-  connection.upload = false;
+  connection.fileStream.end();
   callback(null, connection.uploadCode.join(''));
 }
