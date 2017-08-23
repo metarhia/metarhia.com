@@ -3,9 +3,11 @@
     return callback(api.jstp.ERR_INVALID_SIGNATURE);
   }
 
-  const prefix1 = code.slice(0, 2);
-  const prefix2 = code.slice(2, 4);
-  const fileName = code.slice(4);
+  const [prefix1, prefix2, fileName, isValid] = api.metacom.parseFileCode(code);
+  if (!isValid) {
+    return callback(api.jstp.ERR_INVALID_SIGNATURE);
+  }
+
   const filePath = api.path.join(
     application.dir,
     'files',
