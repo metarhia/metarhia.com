@@ -42,7 +42,12 @@
       connection.uploadCode[1]
     );
 
-    api.mkdirp(uploadDir, () => {
+    api.mkdirp(uploadDir, (err) => {
+      if (err) {
+        application.log.error(
+          `In uploadFileChunk on directory creation: ${err}`
+        );
+      }
       connection.fileStream = api.fs.createWriteStream(
         api.path.join(uploadDir, connection.uploadCode[2]),
         'base64'
