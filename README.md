@@ -14,7 +14,7 @@ such as `g++` or `clang`.
 Run this command on your server:
 
 ```bash
-curl --compressed -o- https://dev.metarhia.com/install.sh | sudo bash
+curl -o- https://raw.githubusercontent.com/metarhia/server/master/install.sh | sudo bash
 ```
 
 After completion follow the instructions printed by the installation script.
