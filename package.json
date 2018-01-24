@@ -6,7 +6,7 @@
   "dependencies": {
     "bcrypt": "1.0.1",
     "file-type": "^5.2.0",
-    "impress": "0.4.x"
+    "impress": "^0.5.0"
   },
   "devDependencies": {
     "eslint": "3.x",

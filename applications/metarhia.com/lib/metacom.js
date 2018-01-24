@@ -17,7 +17,7 @@ api.metacom.chats = new Map();
 api.metacom.leaveChat = (connection) => {
   const room = connection.chatRoom;
   const chat = api.metacom.chats.get(room);
-  chat.delete(connection.sessionId);
+  chat.delete(connection.session.id);
   chat.forEach((connection) => {
     connection.emitRemoteEvent('metacom', 'chatLeave', []);
   });

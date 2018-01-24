@@ -30,7 +30,7 @@
 
   connection.chatRoom = room;
 
-  chat.set(connection.sessionId, connection);
+  chat.set(connection.session.id, connection);
 
   callback(null, hasInterlocutor);
 }

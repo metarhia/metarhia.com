@@ -16,7 +16,7 @@
   }
 
   chat.forEach((conn, sessionId) => {
-    if (sessionId !== connection.sessionId) {
+    if (sessionId !== connection.session.id) {
       conn.emitRemoteEvent('metacom', 'chatFileTransferChunk', [chunk]);
     }
   });
