@@ -36,13 +36,12 @@
   if (!connection.isUploading) {
     connection.uploadCode = api.metacom.generateFileCode();
     const uploadDir = api.path.join(
-      application.dir,
       'files',
       connection.uploadCode[0],
       connection.uploadCode[1]
     );
 
-    api.mkdirp(uploadDir, (err) => {
+    api.mkdirp(api.path.join(application.dir, uploadDir), (err) => {
       if (err) {
         application.log.error(
           `In uploadFileChunk on directory creation: ${err}`
