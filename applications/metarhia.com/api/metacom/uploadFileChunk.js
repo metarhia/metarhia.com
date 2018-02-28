@@ -17,7 +17,7 @@
 
   function writeChunkToFileWriteStream() {
     if (!connection.fileStream.write(chunk)) {
-      connection.fileStream.on('drain', finishChunkUpload);
+      connection.fileStream.once('drain', finishChunkUpload);
     } else {
       finishChunkUpload();
     }
