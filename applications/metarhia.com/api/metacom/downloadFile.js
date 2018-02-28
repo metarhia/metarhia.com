@@ -9,7 +9,6 @@
   }
 
   const filePath = api.path.join(
-    application.dir,
     'files',
     prefix1,
     prefix2,
