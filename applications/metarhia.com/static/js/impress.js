@@ -6,13 +6,13 @@ global.application = {};
 
 api.common = {};
 
-api.common.falseness = function() { return false; };
-api.common.trueness = function() { return true; };
-api.common.emptyness = function() { };
+api.common.falseness = () => false;
+api.common.trueness = () => true;
+api.common.emptyness = () => {};
 
 // Extend obj with properties of ext
 //
-api.common.extend = function(obj, ext) {
+api.common.extend = (obj, ext) => {
   if (obj === undefined) obj = null;
   for (const property in ext) obj[property] = ext[property];
   return obj;
@@ -20,17 +20,18 @@ api.common.extend = function(obj, ext) {
 
 // Make URL absolute
 //
-api.common.absoluteUrl = function(url) {
+api.common.absoluteUrl = (url) => {
   if (url.charAt(0) === '/') {
-    let site = window.location,
-        absoluteUrl = 'ws';
+    const site = window.location;
+    let absoluteUrl = 'ws';
     if (site.protocol === 'https:') absoluteUrl += 's';
     absoluteUrl += '://' + site.host + url;
     return absoluteUrl;
   } else return url;
 };
 
-// Return random number less then one argument random(100) or between two argumants random(50,150)
+// Return random number less then one argument random(100) or
+// between two argumants random(50,150)
 //
 api.common.random = function(min, max) {
   if (arguments.length === 1) {
@@ -95,7 +96,8 @@ api.events.mixinEmitter = function(ee) {
 // DOM utilities
 //
 api.dom = {};
-api.dom.html = document.documentElement || document.getElementsByTagName('html')[0];
+api.dom.html = document.documentElement ||
+  document.getElementsByTagName('html')[0];
 api.dom.head = document.head || document.getElementsByTagName('head')[0];
 api.dom.body = null;
 api.dom.form = null;
@@ -122,19 +124,24 @@ api.dom.platform = {
 const platform = api.dom.platform;
 
 platform.iOS = platform.iPhone || platform.iPod || platform.iPad;
-platform.Mobile = platform.iOS || platform.Android || platform.OperaMini || platform.OperaMobi || platform.BlackBerry || platform.WebOS;
+platform.Mobile = platform.iOS || platform.Android || platform.OperaMini ||
+  platform.OperaMobi || platform.BlackBerry || platform.WebOS;
 platform.WebKit = platform.Chrome || platform.Safari;
 
-if (platform.IE) platform.IEVersion = parseFloat(navigator.appVersion.split('MSIE')[1]);
+if (platform.IE) platform.IEVersion = parseFloat(
+  navigator.appVersion.split('MSIE')[1]
+);
 
 // Patch page links to prevent page reload
 //
-api.dom.fixLinks = function(persist) {
+api.dom.fixLinks = (persist) => {
 
   function makeLink(link) {
-    link.addEventListener('click', function(/*event*/) {
-      //event.preventDefault();
-      if (persist && this.host === window.location.host) localStorage.setItem('location', this.pathname + this.search);
+    link.addEventListener('click', (/*event*/) => {
+      // event.preventDefault();
+      if (persist && this.host === window.location.host) {
+        localStorage.setItem('location', this.pathname + this.search);
+      }
       window.location = this.href;
     }, false);
   }
@@ -143,9 +150,11 @@ api.dom.fixLinks = function(persist) {
     if (persist === null) persist = true;
     persist = persist && localStorage;
     if (persist) {
-      let currentLocation = window.location.pathname + window.location.search,
-          storedLocation = localStorage.getItem('location');
-      if (storedLocation && storedLocation !== currentLocation) window.location = storedLocation;
+      const currentLocation = window.location.pathname + window.location.search;
+      const storedLocation = localStorage.getItem('location');
+      if (storedLocation && storedLocation !== currentLocation) {
+        window.location = storedLocation;
+      }
     }
     const links = document.getElementsByTagName('a');
     for (let i = 0; i < links.length; i++) makeLink(links[i]);
@@ -155,13 +164,17 @@ api.dom.fixLinks = function(persist) {
 
 // Save cookies in localstorage
 //
-api.dom.fixCookie = function(sessionCookieName) {
+api.dom.fixCookie = (sessionCookieName) => {
   if (localStorage && platform.iOS) {
-    let cookieSession = document.cookie.match(new RegExp(sessionCookieName + '=[^;]+')),
-        localSession = localStorage.getItem(sessionCookieName);
+    let cookieSession = document.cookie.match(
+      new RegExp(sessionCookieName + '=[^;]+')
+    );
+    const localSession = localStorage.getItem(sessionCookieName);
     if (cookieSession) {
       cookieSession = cookieSession[0].replace(sessionCookieName + '=', '');
-      if (localSession !== cookieSession) localStorage.setItem(sessionCookieName, cookieSession);
+      if (localSession !== cookieSession) {
+        localStorage.setItem(sessionCookieName, cookieSession);
+      }
     } else if (localSession && localSession !== cookieSession) {
       document.cookie = sessionCookieName + '=' + localSession + '; path=/';
       window.location.reload(true);
@@ -171,20 +184,19 @@ api.dom.fixCookie = function(sessionCookieName) {
 
 // Get element by tag id
 //
-api.dom.id = function(id) {
-  return document.getElementById(id);
-};
+api.dom.id = id => document.getElementById(id);
 
 if (document.getElementsByClassName) {
-  api.dom.getElementsByClass = function(classList, context) {
-    return (context || document).getElementsByClassName(classList);
-  };
+  api.dom.getElementsByClass = (classList, context) => (
+    (context || document).getElementsByClassName(classList)
+  );
 } else {
-  api.dom.getElementsByClass = function(classList, context) {
+  api.dom.getElementsByClass = (classList, context) => {
     context = context || document;
-    let list = context.getElementsByTagName('*'),
-        classArray = classList.split(/\s+/),
-        result = [], i, j;
+    const list = context.getElementsByTagName('*');
+    const classArray = classList.split(/\s+/);
+    const result = [];
+    let i, j;
     for (i = 0; i < list.length; i++) {
       for (j = 0; j < classArray.length; j++) {
         if (list[i].className.search('\\b' + classArray[j] + '\\b') !== -1) {
@@ -199,7 +211,7 @@ if (document.getElementsByClassName) {
 
 // Add element class
 //
-api.dom.addClass = function(element, className) {
+api.dom.addClass = (element, className) => {
   element = api.dom.element(element);
   if (!element) return false;
   if (element.classList) {
@@ -207,26 +219,31 @@ api.dom.addClass = function(element, className) {
   }
   const regex = new RegExp('(^|\\s)' + className + '(\\s|$)', 'g');
   if (regex.test(element.className)) {
-    element.className = (element.className + ' ' + className).replace(/\s+/g, ' ').replace(/(^ | $)/g, '');
+    element.className = (element.className + ' ' + className)
+      .replace(/\s+/g, ' ')
+      .replace(/(^ | $)/g, '');
     return element.className;
   }
 };
 
 // Remove element class
 //
-api.dom.removeClass = function(element, className) {
+api.dom.removeClass = (element, className) => {
   element = api.dom.element(element);
   if (!element) return false;
   if (element.classList) {
     return element.classList.remove(className);
   }
   const regex = new RegExp('(^|\\s)' + className + '(\\s|$)', 'g');
-  element.className = element.className.replace(regex, '$1').replace(/\s+/g, ' ').replace(/(^ | $)/g, '');
+  element.className = element.className
+    .replace(regex, '$1')
+    .replace(/\s+/g, ' ')
+    .replace(/(^ | $)/g, '');
 };
 
 // Check element class
 //
-api.dom.hasClass = function(element, className) {
+api.dom.hasClass = (element, className) => {
   element = api.dom.element(element);
   if (!element) return false;
   if (element.classList) {
@@ -237,32 +254,35 @@ api.dom.hasClass = function(element, className) {
 
 // Toggle element class
 //
-api.dom.toggleClass = function(element, className) {
+api.dom.toggleClass = (element, className) => {
   element = api.dom.element(element);
   if (!element) return false;
   if (element.classList) {
     return element.classList.toggle(className);
   }
   element = api.dom.element(element);
-  if (api.dom.hasClass(element, className)) api.dom.removeClass(element, className);
-  else api.dom.addClass(element, className);
+  if (api.dom.hasClass(element, className)) {
+    api.dom.removeClass(element, className);
+  } else {
+    api.dom.addClass(element, className);
+  }
 };
 
 // Insert element after
 //
-api.dom.insertAfter = function(parent, node, referenceNode) {
+api.dom.insertAfter = (parent, node, referenceNode) => {
   parent.insertBefore(node, referenceNode.nextSibling);
 };
 
 // Add element event
 //
-api.dom.addEvent = function(element, event, fn) {
+api.dom.addEvent = (element, event, fn) => {
   element = api.dom.element(element);
   if (!element) return false;
   if (element.addEventListener) {
     return element.addEventListener(event, fn, false);
   } else if (element.attachEvent) {
-    const callback = function() {
+    const callback = () => {
       fn.call(element);
     };
     return element.attachEvent('on' + event, callback);
@@ -297,7 +317,7 @@ api.dom.on = function(event, element, fn) {
 
 // Use element or selector
 //
-api.dom.element = function(element) {
+api.dom.element = (element) => {
   if (typeof(element) !== 'string') {
     return element;
   }
@@ -319,7 +339,7 @@ api.dom.on('load', () => {
 
 // fn(event) should terurn not empty string for confirmation dialog
 //
-api.dom.onBeforeUnload = function(fn) {
+api.dom.onBeforeUnload = (fn) => {
   api.dom.addEvent(api.dom, 'beforeunload', (event) => {
     const message = fn(event);
     if (typeof(event) === 'undefined') event = window.event;
@@ -330,9 +350,10 @@ api.dom.onBeforeUnload = function(fn) {
 
 // Fire event
 //
-api.dom.fireEvent = function(element, eventName) {
-  if (element.fireEvent) element.fireEvent('on' + eventName);
-  else {
+api.dom.fireEvent = (element, eventName) => {
+  if (element.fireEvent) {
+    element.fireEvent('on' + eventName);
+  } else {
     const event = document.createEvent('Events');
     event.initEvent(eventName, true, false);
     element.dispatchEvent(event);
@@ -341,28 +362,28 @@ api.dom.fireEvent = function(element, eventName) {
 
 // Enable element
 //
-api.dom.enable = function(element, flag) {
+api.dom.enable = (element, flag) => {
   if (flag) api.dom.removeClass(element, 'disabled');
   else api.dom.addClass(element, 'disabled');
 };
 
 // Visible element
 //
-api.dom.visible = function(element, flag) {
+api.dom.visible = (element, flag) => {
   if (flag) api.dom.show(element);
   else api.dom.hide(element);
 };
 
 // Toggle element
 //
-api.dom.toggle = function(element) {
+api.dom.toggle = (element) => {
   if (api.dom.hasClass(element, 'hidden')) api.dom.show(element);
   else api.dom.hide(element);
 };
 
 // Hide element
 //
-api.dom.hide = function(element) {
+api.dom.hide = (element) => {
   if (!api.dom.hasClass(element, 'hidden')) {
     api.dom.addClass(element, 'hidden');
     element.setAttribute('_display', element.style.display);
@@ -372,7 +393,7 @@ api.dom.hide = function(element) {
 
 // Show element
 //
-api.dom.show = function(element) {
+api.dom.show = (element) => {
   if (api.dom.hasClass(element, 'hidden')) {
     api.dom.removeClass(element, 'hidden');
     element.style.display = element.getAttribute('_display') || '';
@@ -381,7 +402,7 @@ api.dom.show = function(element) {
 
 // Load element content using AJAX
 //
-api.dom.load = function(url, element, callback) {
+api.dom.load = (url, element, callback) => {
   element.innerHTML = '<div class="progress"></div>';
   api.ajax.get(url, {}, (err, res) => {
     element.innerHTML = res;
@@ -391,7 +412,7 @@ api.dom.load = function(url, element, callback) {
 
 // Center element
 //
-api.dom.alignCenter = function(element, context, styles) {
+api.dom.alignCenter = (element, context, styles) => {
   let wrapper;
   const popupMargin = (element.style.margin.match(/\d+/) || [0])[0] || 0;
 
@@ -410,11 +431,11 @@ api.dom.alignCenter = function(element, context, styles) {
       'overflow': 'hidden'
     });
     api.dom.setStyles(element, {
-      'display': 'inline-block',  //text-like behaviour for centering by line-height and vertical-align
-      'box-sizing': 'border-box', //include padding to height/width
-      'text-align': 'initial',    //rewrite wrapper's value
-      'line-height': 'normal',    //rewrite wrapper's value
-      'vertical-align': 'middle'  //vertical centering
+      'display': 'inline-block',  // text-like behaviour for centering
+      'box-sizing': 'border-box', // include padding to height/width
+      'text-align': 'initial',    // rewrite wrapper's value
+      'line-height': 'normal',    // rewrite wrapper's value
+      'vertical-align': 'middle'  // vertical centering
     });
   }
   api.dom.setStyles(wrapper, {
@@ -432,15 +453,15 @@ api.dom.alignCenter = function(element, context, styles) {
 
 // Popup
 //
-api.dom.wrapElement = function(element, classname) {
+api.dom.wrapElement = (element, classname) => {
   const wrapper = document.createElement('div');
   if (classname) api.dom.addClass(wrapper, classname);
   wrapper.appendChild(element);
   return wrapper;
 };
 
-api.dom.generateResizeHandler = function(wrapper, popup, popupMargin) {
-  return function() {
+api.dom.generateResizeHandler = (wrapper, popup, popupMargin) => (
+  () => {
     api.dom.setStyles(wrapper, {
       'height': window.innerHeight + 'px',
       'width': window.innerWidth + 'px',
@@ -450,12 +471,16 @@ api.dom.generateResizeHandler = function(wrapper, popup, popupMargin) {
       'max-width': (wrapper.offsetWidth - popupMargin * 2) + 'px',
       'max-height': (wrapper.offsetHeight - popupMargin * 2) + 'px'
     });
-  };
-};
+  }
+);
 
-api.dom.generateClosePopup = function(wrapper, content, resizeHandler, prevPlaceRefs) {
-  const closePopup = function(event) {
-    if (event.target !== wrapper && event.target !== closePopup.closeElement) return true;
+api.dom.generateClosePopup = (
+  wrapper, content, resizeHandler, prevPlaceRefs
+) => {
+  const closePopup = (event) => {
+    if (event.target !== wrapper && event.target !== closePopup.closeElement) {
+      return true;
+    }
     api.dom.setStyles(wrapper, {
       'opacity': '0'
     });
@@ -478,8 +503,8 @@ api.dom.generateClosePopup = function(wrapper, content, resizeHandler, prevPlace
 };
 
 function injectInnerContent(content, contentHolder) {
-  let contentNode = api.dom.element(content),
-      prevPlaceRefs;
+  const contentNode = api.dom.element(content);
+  let prevPlaceRefs;
   if (contentNode) {
     prevPlaceRefs = {};
     prevPlaceRefs.previousParent = contentNode.parentNode;
@@ -491,15 +516,15 @@ function injectInnerContent(content, contentHolder) {
   return prevPlaceRefs;
 }
 
-api.dom.popup = function(content) {
+api.dom.popup = (content) => {
   const popupMargin = 10;
   const popupPadding = {
     x: api.dom.detectScrollbarWidth() || 20,
     y: 20,
   };
 
-  let popup = document.createElement('div'),
-      contentHolder = document.createElement('div');
+  const popup = document.createElement('div');
+  const contentHolder = document.createElement('div');
 
   popup.appendChild(contentHolder);
 
@@ -529,13 +554,15 @@ api.dom.popup = function(content) {
   });
   const prevPlaceRefs = injectInnerContent(content, contentHolder);
   const resizeHandler = api.dom.alignCenter.bind(null, popup);
-  const closePopup = api.dom.generateClosePopup(wrapper, contentHolder, resizeHandler, prevPlaceRefs);
+  const closePopup = api.dom.generateClosePopup(
+    wrapper, contentHolder, resizeHandler, prevPlaceRefs
+  );
   api.dom.on('resize', resizeHandler);
   api.dom.on('click', wrapper, closePopup);
   return closePopup;
 };
 
-api.dom.detectScrollbarWidth = function() {
+api.dom.detectScrollbarWidth = () => {
   const scrollDiv = document.createElement('div');
   api.dom.setStyles(scrollDiv, {
     'width': '100px',
@@ -558,14 +585,14 @@ function dashedToUpperCase(key) {
   );
 }
 
-//transform CSS string to Object
+// transform CSS string to Object
 //
-const cssStringToObject = function(styles) {
+const cssStringToObject = (styles) => {
   if (typeof(styles) === 'string') {
     const stylesStr = styles;
     styles = {};
     stylesStr.split(/\s*;\s*/).filter(Boolean).forEach((val) => {
-      //split by first ':'
+      // split by first ':'
       const delimPos = val.search(/\s*:\s*/);
       const delimLength = val.match(/\s*:\s*/)[0].length;
       const key = val.substr(0, delimPos);
@@ -579,9 +606,10 @@ const cssStringToObject = function(styles) {
 function extractPrefixedStyles(styleName) {
   styleName = styleName || styleName;
   const keys = [styleName];
-  //adding vendor prefixes if needed
+  // adding vendor prefixes if needed
   for (const pref in api.dom.styleProps) {
-    if (api.dom.styleProps[pref].indexOf(styleName) >= 0) {
+    const list = api.dom.styleProps[pref];
+    if (list.includes(styleName)) {
       keys.push('-' + pref + '-' + styleName);
     }
   }
@@ -590,7 +618,7 @@ function extractPrefixedStyles(styleName) {
 
 // Set given styles to element
 //
-api.dom.setStyles = function(element, styles) {
+api.dom.setStyles = (element, styles) => {
   styles = cssStringToObject(styles);
   if (typeof(styles) !== 'object') return false;
 
@@ -605,48 +633,139 @@ api.dom.setStyles = function(element, styles) {
   return true;
 };
 
-/* jshint ignore:start */
-api.dom.styleProps = { //taken from Emmet lib - https://github.com/emmetio/emmet/blob/master/lib/resolver/css.js#L155
-  'webkit': 'animation, animation-delay, animation-direction, animation-duration, animation-fill-mode, animation-iteration-count, animation-name, animation-play-state, animation-timing-function, appearance, backface-visibility, background-clip, background-composite, background-origin, background-size, border-fit, border-horizontal-spacing, border-image, border-vertical-spacing, box-align, box-direction, box-flex, box-flex-group, box-lines, box-ordinal-group, box-orient, box-pack, box-reflect, box-shadow, color-correction, column-break-after, column-break-before, column-break-inside, column-count, column-gap, column-rule-color, column-rule-style, column-rule-width, column-span, column-width, dashboard-region, font-smoothing, highlight, hyphenate-character, hyphenate-limit-after, hyphenate-limit-before, hyphens, line-box-contain, line-break, line-clamp, locale, margin-before-collapse, margin-after-collapse, marquee-direction, marquee-increment, marquee-repetition, marquee-style, mask-attachment, mask-box-image, mask-box-image-outset, mask-box-image-repeat, mask-box-image-slice, mask-box-image-source, mask-box-image-width, mask-clip, mask-composite, mask-image, mask-origin, mask-position, mask-repeat, mask-size, nbsp-mode, perspective, perspective-origin, rtl-ordering, text-combine, text-decorations-in-effect, text-emphasis-color, text-emphasis-position, text-emphasis-style, text-fill-color, text-orientation, text-security, text-stroke-color, text-stroke-width, transform, transition, transform-origin, transform-style, transition-delay, transition-duration, transition-property, transition-timing-function, user-drag, user-modify, user-select, writing-mode, svg-shadow, box-sizing, border-radius',
-  'moz': 'animation-delay, animation-direction, animation-duration, animation-fill-mode, animation-iteration-count, animation-name, animation-play-state, animation-timing-function, appearance, backface-visibility, background-inline-policy, binding, border-bottom-colors, border-image, border-left-colors, border-right-colors, border-top-colors, box-align, box-direction, box-flex, box-ordinal-group, box-orient, box-pack, box-shadow, box-sizing, column-count, column-gap, column-rule-color, column-rule-style, column-rule-width, column-width, float-edge, font-feature-settings, font-language-override, force-broken-image-icon, hyphens, image-region, orient, outline-radius-bottomleft, outline-radius-bottomright, outline-radius-topleft, outline-radius-topright, perspective, perspective-origin, stack-sizing, tab-size, text-blink, text-decoration-color, text-decoration-line, text-decoration-style, text-size-adjust, transform, transform-origin, transform-style, transition, transition-delay, transition-duration, transition-property, transition-timing-function, user-focus, user-input, user-modify, user-select, window-shadow, background-clip, border-radius',
-  'ms': 'accelerator, backface-visibility, background-position-x, background-position-y, behavior, block-progression, box-align, box-direction, box-flex, box-line-progression, box-lines, box-ordinal-group, box-orient, box-pack, content-zoom-boundary, content-zoom-boundary-max, content-zoom-boundary-min, content-zoom-chaining, content-zoom-snap, content-zoom-snap-points, content-zoom-snap-type, content-zooming, filter, flow-from, flow-into, font-feature-settings, grid-column, grid-column-align, grid-column-span, grid-columns, grid-layer, grid-row, grid-row-align, grid-row-span, grid-rows, high-contrast-adjust, hyphenate-limit-chars, hyphenate-limit-lines, hyphenate-limit-zone, hyphens, ime-mode, interpolation-mode, layout-flow, layout-grid, layout-grid-char, layout-grid-line, layout-grid-mode, layout-grid-type, line-break, overflow-style, perspective, perspective-origin, perspective-origin-x, perspective-origin-y, scroll-boundary, scroll-boundary-bottom, scroll-boundary-left, scroll-boundary-right, scroll-boundary-top, scroll-chaining, scroll-rails, scroll-snap-points-x, scroll-snap-points-y, scroll-snap-type, scroll-snap-x, scroll-snap-y, scrollbar-arrow-color, scrollbar-base-color, scrollbar-darkshadow-color, scrollbar-face-color, scrollbar-highlight-color, scrollbar-shadow-color, scrollbar-track-color, text-align-last, text-autospace, text-justify, text-kashida-space, text-overflow, text-size-adjust, text-underline-position, touch-action, transform, transform-origin, transform-origin-x, transform-origin-y, transform-origin-z, transform-style, transition, transition-delay, transition-duration, transition-property, transition-timing-function, user-select, word-break, wrap-flow, wrap-margin, wrap-through, writing-mode',
-  'o': 'dashboard-region, animation, animation-delay, animation-direction, animation-duration, animation-fill-mode, animation-iteration-count, animation-name, animation-play-state, animation-timing-function, border-image, link, link-source, object-fit, object-position, tab-size, table-baseline, transform, transform-origin, transition, transition-delay, transition-duration, transition-property, transition-timing-function, accesskey, input-format, input-required, marquee-dir, marquee-loop, marquee-speed, marquee-style'
+api.dom.styleProps = {
+  // taken from Emmet lib
+  // https://github.com/emmetio/emmet/blob/master/lib/resolver/css.js#L155
+  webkit: [
+    'animation', 'animation-delay', 'animation-direction', 'animation-duration',
+    'animation-fill-mode', 'animation-iteration-count', 'animation-name',
+    'animation-play-state', 'animation-timing-function', 'appearance',
+    'backface-visibility', 'background-clip', 'background-composite',
+    'background-origin', 'background-size', 'border-fit',
+    'border-horizontal-spacing', 'border-image', 'border-vertical-spacing',
+    'box-align', 'box-direction', 'box-flex', 'box-flex-group', 'box-lines',
+    'box-ordinal-group', 'box-orient', 'box-pack', 'box-reflect', 'box-shadow',
+    'color-correction', 'column-break-after', 'column-break-before',
+    'column-break-inside', 'column-count', 'column-gap', 'column-rule-color',
+    'column-rule-style', 'column-rule-width', 'column-span', 'column-width',
+    'dashboard-region', 'font-smoothing', 'highlight', 'hyphenate-character',
+    'hyphenate-limit-after', 'hyphenate-limit-before', 'hyphens',
+    'line-box-contain', 'line-break', 'line-clamp', 'locale',
+    'margin-before-collapse', 'margin-after-collapse', 'marquee-direction',
+    'marquee-increment', 'marquee-repetition', 'marquee-style',
+    'mask-attachment', 'mask-box-image', 'mask-box-image-outset',
+    'mask-box-image-repeat', 'mask-box-image-slice', 'mask-box-image-source',
+    'mask-box-image-width', 'mask-clip', 'mask-composite', 'mask-image',
+    'mask-origin', 'mask-position', 'mask-repeat', 'mask-size', 'nbsp-mode',
+    'perspective', 'perspective-origin', 'rtl-ordering', 'text-combine',
+    'text-decorations-in-effect', 'text-emphasis-color',
+    'text-emphasis-position', 'text-emphasis-style', 'text-fill-color',
+    'text-orientation', 'text-security', 'text-stroke-color',
+    'text-stroke-width', 'transform', 'transition', 'transform-origin',
+    'transform-style', 'transition-delay', 'transition-duration',
+    'transition-property', 'transition-timing-function', 'user-drag',
+    'user-modify', 'user-select', 'writing-mode', 'svg-shadow', 'box-sizing',
+    'border-radius'
+  ],
+  moz: [
+    'animation-delay', 'animation-direction', 'animation-duration',
+    'animation-fill-mode', 'animation-iteration-count', 'animation-name',
+    'animation-play-state', 'animation-timing-function', 'appearance',
+    'backface-visibility', 'background-inline-policy', 'binding',
+    'border-bottom-colors', 'border-image', 'border-left-colors',
+    'border-right-colors', 'border-top-colors', 'box-align', 'box-direction',
+    'box-flex', 'box-ordinal-group', 'box-orient', 'box-pack', 'box-shadow',
+    'box-sizing', 'column-count', 'column-gap', 'column-rule-color',
+    'column-rule-style', 'column-rule-width', 'column-width', 'float-edge',
+    'font-feature-settings', 'font-language-override',
+    'force-broken-image-icon', 'hyphens', 'image-region', 'orient',
+    'outline-radius-bottomleft', 'outline-radius-bottomright',
+    'outline-radius-topleft', 'outline-radius-topright', 'perspective',
+    'perspective-origin', 'stack-sizing', 'tab-size', 'text-blink',
+    'text-decoration-color', 'text-decoration-line', 'text-decoration-style',
+    'text-size-adjust', 'transform', 'transform-origin', 'transform-style',
+    'transition', 'transition-delay', 'transition-duration',
+    'transition-property', 'transition-timing-function', 'user-focus',
+    'user-input', 'user-modify', 'user-select', 'window-shadow',
+    'background-clip', 'border-radius'
+  ],
+  ms: [
+    'accelerator', 'backface-visibility', 'background-position-x',
+    'background-position-y', 'behavior', 'block-progression', 'box-align',
+    'box-direction', 'box-flex', 'box-line-progression', 'box-lines',
+    'box-ordinal-group', 'box-orient', 'box-pack', 'content-zoom-boundary',
+    'content-zoom-boundary-max', 'content-zoom-boundary-min',
+    'content-zoom-chaining', 'content-zoom-snap', 'content-zoom-snap-points',
+    'content-zoom-snap-type', 'content-zooming', 'filter', 'flow-from',
+    'flow-into', 'font-feature-settings', 'grid-column', 'grid-column-align',
+    'grid-column-span', 'grid-columns', 'grid-layer', 'grid-row',
+    'grid-row-align', 'grid-row-span', 'grid-rows', 'high-contrast-adjust',
+    'hyphenate-limit-chars', 'hyphenate-limit-lines', 'hyphenate-limit-zone',
+    'hyphens', 'ime-mode', 'interpolation-mode', 'layout-flow', 'layout-grid',
+    'layout-grid-char', 'layout-grid-line', 'layout-grid-mode',
+    'layout-grid-type', 'line-break', 'overflow-style', 'perspective',
+    'perspective-origin', 'perspective-origin-x', 'perspective-origin-y',
+    'scroll-boundary', 'scroll-boundary-bottom', 'scroll-boundary-left',
+    'scroll-boundary-right', 'scroll-boundary-top', 'scroll-chaining',
+    'scroll-rails', 'scroll-snap-points-x', 'scroll-snap-points-y',
+    'scroll-snap-type', 'scroll-snap-x', 'scroll-snap-y',
+    'scrollbar-arrow-color', 'scrollbar-base-color',
+    'scrollbar-darkshadow-color', 'scrollbar-face-color',
+    'scrollbar-highlight-color', 'scrollbar-shadow-color',
+    'scrollbar-track-color', 'text-align-last', 'text-autospace',
+    'text-justify', 'text-kashida-space', 'text-overflow', 'text-size-adjust',
+    'text-underline-position', 'touch-action', 'transform', 'transform-origin',
+    'transform-origin-x', 'transform-origin-y', 'transform-origin-z',
+    'transform-style', 'transition', 'transition-delay', 'transition-duration',
+    'transition-property', 'transition-timing-function', 'user-select',
+    'word-break', 'wrap-flow', 'wrap-margin', 'wrap-through', 'writing-mode'
+  ],
+  o: [
+    'dashboard-region', 'animation', 'animation-delay', 'animation-direction',
+    'animation-duration', 'animation-fill-mode', 'animation-iteration-count',
+    'animation-name', 'animation-play-state', 'animation-timing-function',
+    'border-image', 'link', 'link-source', 'object-fit', 'object-position',
+    'tab-size', 'table-baseline', 'transform', 'transform-origin', 'transition',
+    'transition-delay', 'transition-duration', 'transition-property',
+    'transition-timing-function', 'accesskey', 'input-format', 'input-required',
+    'marquee-dir', 'marquee-loop', 'marquee-speed', 'marquee-style'
+  ]
 };
-/* jshint ignore:end */
-
-for (const i in api.dom.styleProps) {
-  api.dom.styleProps[i] = api.dom.styleProps[i].split(/\s*,\s*/);
-}
 
 // Confirmation dialog
 //   Buttons: ['Yes', 'No', 'Ok', 'Cancel']
 //
-api.dom.confirmation = function(title, message, eventYes, buttons) {
+api.dom.confirmation = (title, message, eventYes, buttons) => {
   // TODO: implement api.dom.confirmation
 };
 
 // Input dialog
 //
-api.dom.input = function(title, prompt, defaultValue, eventOk) {
+api.dom.input = (title, prompt, defaultValue, eventOk) => {
 };
 
-// Call disableSelection on page load with element to disable or without parameters to disable selection in whole page
+// Call disableSelection on page load with element to disable or
+// without parameters to disable selection in whole page
 //
-api.dom.disableSelection = function(target) {
+api.dom.disableSelection = (target) => {
   target = target || api.dom.html;
-  if (typeof(target.onselectstart) !== 'undefined') target.onselectstart = api.common.falseness; // For IE
-  else if (typeof(target.style.MozUserSelect) !== 'undefined') { //For Firefox
+  if (typeof(target.onselectstart) !== 'undefined') {
+    target.onselectstart = api.common.falseness; // For IE
+  } else if (typeof(target.style.MozUserSelect) !== 'undefined') {
+    // For Firefox
     target.style.MozUserSelect = 'none';
     // if (target === body || target === api.dom.html)
-    //   for (var i = 0; i < body.children.length; i++)
+    //   for (let i = 0; i < body.children.length; i++)
     //     body.children[i].style.MozUserSelect='none';
-  } else target.onmousedown = api.common.falseness; // All other browsers (Opera)
+  } else {
+    target.onmousedown = api.common.falseness; // All other browsers (Opera)
+  }
   target.style.cursor = 'default';
 };
 
 // Disable browser context menu
 //
-api.dom.disableContextMenu = function(target) {
+api.dom.disableContextMenu = (target) => {
   target = target || api.dom.html;
   api.dom.addEvent(document, 'contextmenu', (event) => {
     event = event || window.event;
@@ -657,9 +776,9 @@ api.dom.disableContextMenu = function(target) {
 
 // Disable browser content copy function
 //
-api.dom.disableCopy = function(target) {
+api.dom.disableCopy = (target) => {
   target = target || api.dom.html;
-  const fn = function(event) {
+  const fn = (event) => {
     event = event || window.event;
     if (api.dom.clipboardData) api.dom.clipboardData.setData('Text', '');
     event.returnValue = false;
@@ -668,12 +787,12 @@ api.dom.disableCopy = function(target) {
   };
   api.dom.addEvent(target, 'copy', fn);
 
-  /*api.dom.addEvent(target, 'keydown', function(event) {
+  /*api.dom.addEvent(target, 'keydown', (event) => {
     event = event || window.event;
     event.returnValue = false;
-    var key = event.keyCode;
-    var ctrlDown = event.ctrlKey || event.metaKey; // Mac support
-    var result = true;
+    let key = event.keyCode;
+    let ctrlDown = event.ctrlKey || event.metaKey; // Mac support
+    let result = true;
 
     console.log('key=' + key + ' ctrlDown=' + ctrlDown);
     // Check for Alt+Gr (http://en.wikipedia.org/wiki/AltGr_key)
@@ -689,25 +808,25 @@ api.dom.disableCopy = function(target) {
 
 // Escape HTML
 //
-api.dom.htmlEscape = function(content) {
-  return content.replace(/[&<>"'\/]/g, (char) =>
-     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;' }[char])
-  );
-};
+api.dom.htmlEscape = (content) => (
+  content.replace(/[&<>"'\/]/g, (char) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;'
+  }[char]))
+);
 
 // Simple string template
 //
-api.dom.template = function(tpl, data, escapeHtml) {
-  return tpl.replace(/@([\-\.0-9a-zA-Z]+)@/g, (s, key) =>
-     escapeHtml ? api.dom.htmlEscape(data[key]) : data[key]
-  );
-};
+api.dom.template = (tpl, data, escapeHtml) => (
+  tpl.replace(/@([\-\.0-9a-zA-Z]+)@/g, (s, key) => (
+    escapeHtml ? api.dom.htmlEscape(data[key]) : data[key]
+  ))
+);
 
 // Simple HTML template
 //
-api.dom.templateHtml = function(tpl, data) {
-  return api.dom.template(tpl, data, true);
-};
+api.dom.templateHtml = (tpl, data) => (
+  api.dom.template(tpl, data, true)
+);
 
 // Cookie utils
 //
@@ -715,23 +834,25 @@ api.cookie = {};
 
 // Get cookie value by name
 //
-api.cookie.get = function(name) {
+api.cookie.get = (name) => {
   const matches = document.cookie.match(new RegExp(
-    '(?:^|; )' + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)'
+    '(?:^|; )' +
+    name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') +
+    '=([^;]*)'
   ));
   return matches ? decodeURIComponent(matches[1]) : false;
 };
 
 // Set cookie value
 //
-api.cookie.set = function(name, value) {
+api.cookie.set = (name, value) => {
   const cookie = name + '=' + escape(value) + '; path=/';
   document.cookie = cookie;
 };
 
 // Delete cookie value
 //
-api.cookie.delete = function(name) {
+api.cookie.delete = (name) => {
   api.cookie.set(name, null, { expires: -1 });
 };
 
@@ -756,25 +877,29 @@ api.tabs.supportsLocalStorage = false;
 //   api.tabs.newtab = tabId (signal to master)
 //   api.tabs.event = signal in format { name:s, data:d, time: Date.now() }
 //
-api.tabs.initializationWait = function(callback) {
-  if (!api.tabs.initialized) api.tabs.initializationCallbacks.push(callback);
-  else callback();
+api.tabs.initializationWait = (callback) => {
+  if (!api.tabs.initialized) {
+    api.tabs.initializationCallbacks.push(callback);
+  } else {
+    callback();
+  }
 };
 
 // Initialize tabs
 //
-api.tabs.initialize = function() {
-  try {
-    api.tabs.supportsLocalStorage = 'localStorage' in window && window.localStorage !== null;
-  } catch (e) {
-  }
+api.tabs.initialize = () => {
+  api.tabs.supportsLocalStorage = (
+    'localStorage' in window && window.localStorage !== null
+  );
   if (api.tabs.supportsLocalStorage) api.tabs.initializeConnection();
 };
 
 // Initialize tabs done
 //
-api.tabs.initializeDone = function() {
-  api.tabs.heartbeatEvent = setInterval(api.tabs.listenHandler, api.tabs.heartbeatInterval);
+api.tabs.initializeDone = () => {
+  api.tabs.heartbeatEvent = setInterval(
+    api.tabs.listenHandler, api.tabs.heartbeatInterval
+  );
   api.tabs.initialized = true;
   api.tabs.initializationCallbacks.forEach((callback) => {
     callback();
@@ -784,7 +909,7 @@ api.tabs.initializeDone = function() {
 
 // Get free browser tab
 //
-api.tabs.getFreeTab = function() {
+api.tabs.getFreeTab = () => {
   for (let id = 1; ;id++) {
     if (typeof(localStorage['impress.tab' + id]) === 'undefined') return id;
   }
@@ -792,12 +917,14 @@ api.tabs.getFreeTab = function() {
 
 // Initialize tabs connection
 //
-api.tabs.initializeConnection = function() {
+api.tabs.initializeConnection = () => {
   if (!api.tabs.initialized) {
     api.tabs.tabId = api.tabs.getFreeTab();
     api.tabs.tabKey = 'impress.tab' + api.tabs.tabId;
     api.tabs.heartbeat();
-    api.tabs.heartbeatEvent = setInterval(api.tabs.heartbeat, api.tabs.heartbeatInterval);
+    api.tabs.heartbeatEvent = setInterval(
+      api.tabs.heartbeat, api.tabs.heartbeatInterval
+    );
     localStorage['impress.newtab'] = api.tabs.tabId;
     global.addEventListener('storage', api.tabs.onStorageChange, false);
   }
@@ -809,7 +936,7 @@ api.tabs.initializeConnection = function() {
 
 // Master tab heartbeat
 //
-api.tabs.heartbeat = function() {
+api.tabs.heartbeat = () => {
   localStorage[api.tabs.tabKey] = Date.now();
   if (api.tabs.masterTab) api.tabs.checkTabs();
   else api.tabs.checkMaster();
@@ -817,19 +944,21 @@ api.tabs.heartbeat = function() {
 
 // Check master tab
 //
-api.tabs.checkMaster = function() {
+api.tabs.checkMaster = () => {
   const masterNow = parseInt(localStorage[api.tabs.masterTabKey], 10);
   if (Date.now() - masterNow > api.tabs.heartbeatInterval * 2) {
-    let tabId, tabNow, key,
-        keys = Object.keys(localStorage),
-        maxId = 0,
-        now = Date.now();
+    let tabId, tabNow, key;
+    const keys = Object.keys(localStorage);
+    let maxId = 0;
+    const now = Date.now();
     for (let i = 0; i < keys.length; i++) {
       key = keys[i];
       if (key.indexOf('impress.tab') === 0) {
         tabId = parseInt(key.match(/\d+/)[0], 10);
         tabNow = parseInt(localStorage[key], 10);
-        if (now - tabNow < api.tabs.heartbeatInterval * 2 && tabId > maxId) maxId = tabId;
+        if (now - tabNow < api.tabs.heartbeatInterval * 2 && tabId > maxId) {
+          maxId = tabId;
+        }
       }
     }
     if (maxId === api.tabs.tabId) api.tabs.createMaster();
@@ -838,8 +967,9 @@ api.tabs.checkMaster = function() {
 
 // Check browser babs
 //
-api.tabs.checkTabs = function() {
-  let tabNow, key, keys = Object.keys(localStorage);
+api.tabs.checkTabs = () => {
+  let tabNow, key;
+  const keys = Object.keys(localStorage);
   for (let i = 0; i < keys.length; i++) {
     key = keys[i];
     if (key !== api.tabs.tabKey && key.indexOf('impress.tab') === 0) {
@@ -853,7 +983,7 @@ api.tabs.checkTabs = function() {
 
 // Set master tab
 //
-api.tabs.setMaster = function(id) {
+api.tabs.setMaster = (id) => {
   api.tabs.masterTab = false;
   api.tabs.masterTabId = id;
   api.tabs.masterTabKey = 'impress.tab' + id;
@@ -861,7 +991,7 @@ api.tabs.setMaster = function(id) {
 
 // Create master tab
 //
-api.tabs.createMaster = function() {
+api.tabs.createMaster = () => {
   api.tabs.masterTab = true;
   api.tabs.masterTabId = api.tabs.tabId;
   api.tabs.masterTabKey = api.tabs.tabKey;
@@ -871,20 +1001,27 @@ api.tabs.createMaster = function() {
 
 // Impress cross-tab communication using localstorage
 //
-api.tabs.onStorageChange = function(e) {
+api.tabs.onStorageChange = (e) => {
   if (e.key === 'impress.event') {
     const event = JSON.parse(e.newValue);
     api.tabs.emit(event.name, event.data);
   } else if (api.tabs.masterTab) {
-    if (e.key === 'impress.newtab') api.tabs.heartbeat();
-    else if (e.key === 'impress.master') console.log('WARNING: master collision');
-  } else if (e.key === 'impress.master') api.tabs.setMaster(e.newValue);
+    if (e.key === 'impress.newtab') {
+      api.tabs.heartbeat();
+    } else if (e.key === 'impress.master') {
+      console.log('WARNING: master collision');
+    }
+  } else if (e.key === 'impress.master') {
+    api.tabs.setMaster(e.newValue);
+  }
 };
 
 // Emit cross-tab event
 //
-api.tabs.emitTabs = function(name, data) {
-  localStorage['impress.event'] = JSON.stringify({ name, data, time: Date.now() });
+api.tabs.emitTabs = (name, data) => {
+  localStorage['impress.event'] = JSON.stringify({
+    name, data, time: Date.now()
+  });
 };
 
 // Initialize tabs modile
@@ -893,18 +1030,19 @@ api.tabs.initialize();
 
 // Prepare AJAX namespace stub
 //
-api.ajax = function(methods) { // params: { method: { get/post:url }, ... }
+api.ajax = (methods) => {
+  // params: { method: { get/post:url }, ... }
 
   function createMethod(apiStub, apiMethod) {
     if (apiMethod === 'introspect') {
-      apiStub[apiMethod] = function(params, callback) {
+      apiStub[apiMethod] = (params, callback) => {
         apiStub.request(apiMethod, params, (err, data) => {
           apiStub.init(data);
           callback(err, data);
         });
       };
     } else {
-      apiStub[apiMethod] = function(params, callback) {
+      apiStub[apiMethod] = (params, callback) => {
         apiStub.request(apiMethod, params, callback);
       };
     }
@@ -913,7 +1051,8 @@ api.ajax = function(methods) { // params: { method: { get/post:url }, ... }
   const apiStub = {};
 
   apiStub.request = function(apiMethod, params, callback) {
-    let err = null, requestParams = this.methods[apiMethod];
+    let err = null;
+    const requestParams = this.methods[apiMethod];
     if (requestParams) {
       let httpMethod, url;
       if (requestParams.get) { httpMethod = 'GET'; url = requestParams.get; }
@@ -926,7 +1065,7 @@ api.ajax = function(methods) { // params: { method: { get/post:url }, ... }
     callback(err, null);
   };
 
-  apiStub.init = function(methods) {
+  apiStub.init = (methods) => {
     apiStub.methods = methods;
     for (const apiMethod in apiStub.methods) createMethod(apiStub, apiMethod);
   };
@@ -945,15 +1084,15 @@ api.ajax = function(methods) { // params: { method: { get/post:url }, ... }
 //   update(obj, callback)   update one record, callback(err) on done
 //   delete(query, callback) delete multiple records, callback(err) on done
 // may be implemented methods:
-//   introspect(params, callback) populates dataSource.methods with introspection metadata returning from server
-//   metadata(params, callback)   populates dataSource.metadata with metadata from server
-//   find(query, callback)        return multiple records as Array, callback(err, Array)
+//   introspect(params, callback) get dataSource.methods from server metadata
+//   metadata(params, callback)   get dataSource.metadata from server metadata
+//   find(query, callback)        return multiple records: callback(err, Array)
 
 // AJAX data source interface
 //
-api.ajax.ajaxDataSource = function(methods) {
+api.ajax.ajaxDataSource = (methods) => {
   const ds = api.ajax.ajax(methods);
-  ds.read = function(query, callback) {
+  ds.read = (query, callback) => {
     ds.request('read', query, (err, data) => {
       // autocreate Record
       //   callback(err, api.ajax.record({ data: data }));
@@ -971,9 +1110,9 @@ api.ajax.ajaxDataSource = function(methods) {
 //   parseResponse - boolean flag to parse JSON (boolean, optional)
 //   callback - function to call on response received
 //
-api.ajax.request = function(method, url, params, parseResponse, callback) {
-  let key, data = [], value = '',
-      req = new XMLHttpRequest();
+api.ajax.request = (method, url, params, parseResponse, callback) => {
+  let key, value = '', data = [];
+  const req = new XMLHttpRequest();
   req.open(method, url, true);
   for (key in params) {
     if (!params.hasOwnProperty(key)) continue;
@@ -983,7 +1122,7 @@ api.ajax.request = function(method, url, params, parseResponse, callback) {
   }
   data = data.join('&');
   req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-  req.onreadystatechange = function() {
+  req.onreadystatechange = () => {
     if (req.readyState === 4) {
       let err = null, res = req.responseText;
       if (req.status === 0 || req.status === 200) {
@@ -998,9 +1137,7 @@ api.ajax.request = function(method, url, params, parseResponse, callback) {
       if (callback) callback(err, res);
     }
   };
-  try {
-    req.send(data);
-  } catch (e) { }
+  req.send(data);
 };
 
 // Send HTTP GET request
@@ -1025,31 +1162,31 @@ api.ajax.post = function(url, params, callback) {
 
 // Create websocket instance
 //
-api.ws = function(url) {
+api.ws = (url) => {
 
-  let ws = new api.events.EventEmitter(),
-      socket = new WebSocket(api.common.absoluteUrl(url));
+  const ws = new api.events.EventEmitter();
+  const socket = new WebSocket(api.common.absoluteUrl(url));
 
   ws.socket = socket;
 
-  socket.onopen = function() {
+  socket.onopen = () => {
     ws.emit('open');
   };
 
-  socket.onclose = function() {
+  socket.onclose = () => {
     ws.emit('close');
   };
 
-  socket.onmessage = function(event) {
+  socket.onmessage = (event) => {
     ws.emit('message', event);
   };
 
-  ws.close = function() {
+  ws.close = () => {
     socket.close();
     ws.socket = null;
   };
 
-  ws.send = function(data) {
+  ws.send = (data) => {
     socket.send(data);
   };
 
@@ -1059,7 +1196,7 @@ api.ws = function(url) {
 
 // Create Server-Sent Events instance
 //
-api.sse = function(url) {
+api.sse = (url) => {
   const sse = new EventSource(url);
   sse.on = sse.addEventListener;
   return sse;
@@ -1094,27 +1231,27 @@ application.connect = function(callback) {
 };
 
 application.reconnect = function() {
-  var node = application.balancer.getNextNode(),
-      schema = node.server.secure ? 'wss' : 'ws',
-      path = '/examples/impress.rpc',
-      url = schema + '://' + node.host + path;
+  let node = application.balancer.getNextNode();
+  let schema = node.server.secure ? 'wss' : 'ws';
+  let path = '/examples/impress.rpc';
+  let url = schema + '://' + node.host + path;
   application.rpc = api.rpc(url);
-  application.rpc.on('open', function() {
+  application.rpc.on('open', () => {
     application.connect.url = url;
     console.log('opened ' + url);
   });
-  application.rpc.on('close', function() {
+  application.rpc.on('close', () => {
     console.log('closed ' + url);
-    setTimeout(function() {
+    setTimeout(() => {
       application.reconnect();
     }, application.balancer.retryInterval);
   });
 };
 */
 
-application.balancer.generateSequence = function() {
-  let i, server, serverName,
-      servers = application.balancer.servers;
+application.balancer.generateSequence = () => {
+  let i, server, serverName;
+  const servers = application.balancer.servers;
   if (servers) {
     for (serverName in servers) {
       server = servers[serverName];
@@ -1128,7 +1265,7 @@ application.balancer.generateSequence = function() {
   }
 };
 
-application.balancer.getNextNode = function() {
+application.balancer.getNextNode = () => {
   const balancer = application.balancer;
   balancer.globalRetry++;
   if (balancer.currentRetry < balancer.currentRetryMax) {
