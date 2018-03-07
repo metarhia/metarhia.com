@@ -20,7 +20,10 @@ for (const keyName in KEY_CODE) KEY_NAME[KEY_CODE[keyName]] = keyName;
 
 let controlKeyboard, panelScroll;
 let controlInput, controlBrowse, controlScroll;
-let ajax;
+
+const ajax = api.ajax({
+  command: { post: '/api/landing/command.json' }
+});
 
 const random = (min, max) => {
   if (max === undefined) {
@@ -123,13 +126,18 @@ const clear = () => {
 const print = (s) => {
   const list = Array.isArray(s);
   let line = list ? s.shift() : s;
+  if (!line) line = '';
   const element = document.createElement('div');
   controlBrowse.insertBefore(element, controlInput);
   controlBrowse.scrollTop = controlBrowse.scrollHeight;
   scrollBottom();
-  if (line) {
+  if (!line) line = '\xa0';
+  if (line.charAt(0) === '<') {
+    element.innerHTML += line;
+  } else {
     const timer = setInterval(() => {
-      element.innerHTML += line.charAt(0);
+      const char = line.charAt(0);
+      element.innerHTML += char;
       line = line.substr(1);
       if (!line) clearInterval(timer);
     }, 50);
@@ -151,7 +159,8 @@ const enterKey = () => {
 };
 
 const format = (obj) => {
-  let key, val, res = '<table><tr><th>Parameter</th><th>Value</th></tr>';
+  let res = '<table><tr><th>Parameter</th><th>Value</th></tr>';
+  let key, val;
   for (key in obj) {
     val = obj[key];
     res += '<tr><td>' + key + '</td><td>' + val + '</td></tr>';
@@ -240,7 +249,6 @@ const initKeyboard = () => {
   controlBrowse.style.bottom = controlKeyboard.offsetHeight + 'px';
 };
 
-
 document.onkeydown = (event) => {
   let keyName, fn;
   if (controlInput.inputActive) {
@@ -264,16 +272,6 @@ document.onkeypress = (e) => {
   }
 };
 
-const exec = (line) => {
-  const command = line.split(' ');
-  const cmd = command[0];
-  print('exec ' + cmd);
-  ajax.command({ name: cmd }, (err, data) => {
-    print(data.response);
-    commandLoop();
-  });
-};
-
 const commandLoop = () => {
   input('command', '.', (err, line) => {
     exec(line);
@@ -281,14 +279,16 @@ const commandLoop = () => {
   });
 };
 
-const commands = {
-  contacts() {
-    ajax.command({ name: 'contacts' }, (err, data) => {
-      console.dir(data);
-      commandLoop();
-    });
-  }
-};
+const commands = {};
+
+function exec(line) {
+  const args = line.split(' ');
+  const cmd = args.shift();
+  ajax.command({ cmd, args }, (err, data) => {
+    print(data.response);
+    commandLoop();
+  });
+}
 
 api.dom.on('load', () => {
   panelScroll = document.getElementById('panelScroll');
@@ -299,12 +299,10 @@ api.dom.on('load', () => {
   initKeyboard();
   initScroll();
   print([
-    'Metarhia/KPI is a Research & Development Center ',
-    'in Kiev Polytechnic Institute',
-    'Commands: about, contacts, chat, links'
+    'Metarhia/KPI is a Research & Development Center',
+    'in Kiev Polytechnic Institute (ICT faculty)',
+    '',
+    'Commands: about, fields, team, links, stack, contacts'
   ]);
-  ajax = api.ajax({
-    command: { post: '/api/landing/command.json' }
-  });
   commandLoop();
 });
