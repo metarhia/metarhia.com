@@ -5,6 +5,8 @@ const ALPHA_LOWER = 'abcdefghijklmnopqrstuvwxyz';
 const ALPHA = ALPHA_UPPER + ALPHA_LOWER;
 const DIGIT = '0123456789';
 const CHARS = ALPHA + DIGIT;
+const TIME_LINE = 300;
+const TIME_CHAR = 20;
 
 const KEY_CODE = {
   BACKSPACE: 8, TAB: 9, ENTER: 13, PAUSE: 19, ESC: 27, SPACE: 32,
@@ -128,9 +130,6 @@ const print = (s) => {
   let line = list ? s.shift() : s;
   if (!line) line = '';
   const element = document.createElement('div');
-  controlBrowse.insertBefore(element, controlInput);
-  controlBrowse.scrollTop = controlBrowse.scrollHeight;
-  scrollBottom();
   if (!line) line = '\xa0';
   if (line.charAt(0) === '<') {
     element.innerHTML += line;
@@ -140,9 +139,14 @@ const print = (s) => {
       element.innerHTML += char;
       line = line.substr(1);
       if (!line) clearInterval(timer);
-    }, 50);
+      controlBrowse.scrollTop = controlBrowse.scrollHeight;
+      scrollBottom();
+    }, TIME_CHAR);
   }
-  if (list && s.length) setTimeout(print, 1000, s);
+  if (list && s.length) setTimeout(print, TIME_LINE, s);
+  controlBrowse.insertBefore(element, controlInput);
+  controlBrowse.scrollTop = controlBrowse.scrollHeight;
+  scrollBottom();
 };
 
 const enterKey = () => {
@@ -281,11 +285,15 @@ const commandLoop = () => {
 
 const commands = {};
 
+const help = [
+  '', 'Commands: about, fields, team, links, stack, contacts'
+];
+
 function exec(line) {
   const args = line.split(' ');
   const cmd = args.shift();
   ajax.command({ cmd, args }, (err, data) => {
-    print(data.response);
+    print(data.response.concat(help));
     commandLoop();
   });
 }
@@ -301,8 +309,6 @@ api.dom.on('load', () => {
   print([
     'Metarhia/KPI is a Research & Development Center',
     'in Kiev Polytechnic Institute (ICT faculty)',
-    '',
-    'Commands: about, fields, team, links, stack, contacts'
-  ]);
+  ].concat(help));
   commandLoop();
 });
