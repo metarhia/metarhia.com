@@ -293,7 +293,9 @@ function exec(line) {
   const args = line.split(' ');
   const cmd = args.shift();
   ajax.command({ cmd, args }, (err, data) => {
-    print(data.response.concat(help));
+    if (data.response) {
+      print(data.response.concat(help));
+    }
     commandLoop();
   });
 }
@@ -306,9 +308,16 @@ api.dom.on('load', () => {
   controlScroll = document.getElementById('controlScroll');
   initKeyboard();
   initScroll();
+  const path = window.location.pathname.substring(1);
   print([
     'Metarhia/KPI is a Research & Development Center',
     'in Kiev Polytechnic Institute (ICT faculty)',
   ].concat(help));
+  if (path) {
+    setTimeout(() => {
+      exec('contacts ' + path);
+      window.history.replaceState(null, '', '/');
+    }, TIME_LINE * 3);
+  }
   commandLoop();
 });
