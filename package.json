@@ -25,5 +25,20 @@
   "main": "server.js",
   "engines": {
     "node": "^12.9 || 14 || 15"
+  },
+  "scripts": {
+    "test": "npm run lint",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "impress": "^2.0.0-alpha.38"
+  },
+  "devDependencies": {
+    "eslint": "^7.15.0",
+    "eslint-config-metarhia": "^7.0.1",
+    "eslint-config-prettier": "^7.0.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.0",
+    "prettier": "^2.2.1"
   }
 }
