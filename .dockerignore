@@ -1,0 +1,11 @@
+.git
+.github
+.gitignore
+.npmignore
+.eslintignore
+.editorconfig
+test
+node_modules
+LICENSE
+README.md
+npm-debug.log
