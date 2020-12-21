@@ -11,8 +11,7 @@ const ALPHA_LOWER = 'abcdefghijklmnopqrstuvwxyz';
 const ALPHA = ALPHA_UPPER + ALPHA_LOWER;
 const DIGIT = '0123456789';
 const CHARS = ALPHA + DIGIT;
-const TIME_LINE = 300;
-const TIME_CHAR = 20;
+const TIME_CHAR = 5;
 
 const KEY_CODE = {
   BACKSPACE: 8, TAB: 9, ENTER: 13, PAUSE: 19, ESC: 27, SPACE: 32,
@@ -110,28 +109,50 @@ const clear = () => {
   }
 };
 
-const print = s => {
-  const list = Array.isArray(s);
-  let line = list ? s.shift() : s;
-  if (!line) line = '';
+const sleep = (msec) =>
+  new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, msec);
+  });
+
+const followLink = async (event) => {
+  const name = event.target.getAttribute('data-link').slice(0, -3);
+  const { text } = await api.console.content({ name });
+  print(text);
+};
+
+const print = async (text = '') => {
   const element = document.createElement('div');
-  if (!line) line = '\xa0';
-  if (line.charAt(0) === '<') {
-    element.innerHTML += line;
-  } else {
-    const timer = setInterval(() => {
-      const char = line.charAt(0);
-      element.innerHTML += char;
-      line = line.substr(1);
-      if (!line) clearInterval(timer);
-      controlBrowse.scrollTop = controlBrowse.scrollHeight;
-      scrollBottom();
-    }, TIME_CHAR);
-  }
-  if (list && s.length) setTimeout(print, TIME_LINE, s);
   controlBrowse.insertBefore(element, controlInput);
-  controlBrowse.scrollTop = controlBrowse.scrollHeight;
-  scrollBottom();
+  let i = 0;
+  while (i < text.length) {
+    const char = text.charAt(i);
+    i++;
+    if (char === '\n') {
+      element.innerHTML += '<br/>';
+    } else if (char === '#' && i === 1) {
+      const titleEnd = text.indexOf('\n');
+      document.title = text.substring(i, titleEnd);
+      i = titleEnd + 1;
+    } else if (char === '[') {
+      const labelEnd = text.indexOf(']', i);
+      const linkEnd = text.indexOf(')', i);
+      const label = text.substring(i, labelEnd);
+      const link = text.substring(labelEnd + 2, linkEnd);
+      element.innerHTML += `<a data-link="${link}">${label}</a>`;
+      i = linkEnd + 1;
+    } else {
+      element.innerHTML += char;
+    }
+    await sleep(TIME_CHAR);
+    controlBrowse.scrollTop = controlBrowse.scrollHeight;
+    scrollBottom();
+  }
+  const links = element.querySelectorAll('a');
+  for (const link of links) {
+    link.onclick = followLink;
+  }
 };
 
 const inputKeyboardEvents = {
@@ -293,7 +314,6 @@ const exec = async line => {
     upload();
   } else if (args[0] === 'download') {
     const packet = await api.example.downloadFile();
-    
   } else if (args[0] === 'counter') {
     const packet = await api.example.counter();
     print(`counter: ${packet.result}`);
@@ -311,19 +331,7 @@ function commandLoop() {
   });
 }
 
-const signIn = async () => {
-  try {
-    await metacom.load('auth');
-    await api.auth.status();
-  } catch (err) {
-    await api.auth.signIn({ login: 'marcus', password: 'marcus' });
-  }
-  await metacom.load('example');
-  api.example.on('resmon', data => print(JSON.stringify(data)));
-  api.example.subscribe();
-};
-
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
   panelScroll = document.getElementById('panelScroll');
   controlInput = document.getElementById('controlInput');
   controlKeyboard = document.getElementById('controlKeyboard');
@@ -331,19 +339,8 @@ window.addEventListener('load', () => {
   controlScroll = document.getElementById('controlScroll');
   initKeyboard();
   initScroll();
-  const path = window.location.pathname.substring(1);
-  print([
-    'Metarhia is a Community, Technology Stack and R&D Center',
-    'for Cloud Computing and Distributed Database Systems',
-    '',
-    'Commands: about, fields, team, links, stack, contacts',
-  ]);
-  if (path) {
-    setTimeout(() => {
-      exec('contacts ' + path);
-      window.history.replaceState(null, '', '/');
-    }, TIME_LINE * 3);
-  }
-  signIn();
+  await metacom.load('console');
+  const { text } = await api.console.content({ name: 'home' });
+  print(text);
   commandLoop();
 });
