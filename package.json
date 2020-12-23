@@ -28,7 +28,8 @@
   },
   "scripts": {
     "test": "npm run lint",
-    "lint": "eslint ."
+    "lint": "eslint . && prettier -c \"**/*.js\" \"**/*.json\" \"**/*.md\" \".*rc\" \"**/*.yml\"",
+    "fmt": "prettier --write \"**/*.js\" \"**/*.json\" \"**/*.md\" \".*rc\" \"**/*.yml\""
   },
   "dependencies": {
     "impress": "^2.0.0"
