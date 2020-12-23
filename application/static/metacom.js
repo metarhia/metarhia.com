@@ -102,7 +102,7 @@ export class Metacom extends EventEmitter {
         if (status) {
           this.streams.delete(callId);
           const blob = new Blob(stream.chunks);
-          blob.text().then(text => {
+          blob.text().then((text) => {
             console.log({ text });
           });
           return;
@@ -130,7 +130,7 @@ export class Metacom extends EventEmitter {
   }
 
   scaffold(iname, ver) {
-    return methodName => async (args = {}) => {
+    return (methodName) => async (args = {}) => {
       const callId = ++this.callId;
       const interfaceName = ver ? `${iname}.${ver}` : iname;
       const target = interfaceName + '/' + methodName;
@@ -186,7 +186,7 @@ class WebsocketTransport extends Metacom {
       }
     }, this.pingInterval);
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       socket.addEventListener('open', () => {
         this.connected = true;
         resolve();
@@ -226,10 +226,10 @@ class HttpTransport extends Metacom {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: data,
-    }).then(res => {
+    }).then((res) => {
       const { status } = res;
       if (status === 200) {
-        return res.text().then(packet => {
+        return res.text().then((packet) => {
           if (packet.error) throw new MetacomError(packet.error);
           this.message(packet);
         });
