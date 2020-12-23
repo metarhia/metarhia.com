@@ -14,11 +14,34 @@ const CHARS = ALPHA + DIGIT;
 const TIME_CHAR = 5;
 
 const KEY_CODE = {
-  BACKSPACE: 8, TAB: 9, ENTER: 13, PAUSE: 19, ESC: 27, SPACE: 32,
-  PGUP: 33, PGDN: 34, END: 35, HOME: 36,
-  LT: 37, UP: 38, RT: 39, DN: 40, INS: 45, DEL: 46,
-  F1: 112, F2: 113, F3: 114, F4: 115, F5: 116, F6: 117,
-  F7: 118, F8: 119, F9: 120, F10: 121, F11: 122, F12: 123,
+  BACKSPACE: 8,
+  TAB: 9,
+  ENTER: 13,
+  PAUSE: 19,
+  ESC: 27,
+  SPACE: 32,
+  PGUP: 33,
+  PGDN: 34,
+  END: 35,
+  HOME: 36,
+  LT: 37,
+  UP: 38,
+  RT: 39,
+  DN: 40,
+  INS: 45,
+  DEL: 46,
+  F1: 112,
+  F2: 113,
+  F3: 114,
+  F4: 115,
+  F5: 116,
+  F6: 117,
+  F7: 118,
+  F8: 119,
+  F9: 120,
+  F10: 121,
+  F11: 122,
+  F12: 123,
   ACCENT: 192,
 };
 
@@ -32,15 +55,14 @@ const pad = (padChar, length) => new Array(length + 1).join(padChar);
 
 const { userAgent } = navigator;
 
-const isMobile = () => (
+const isMobile = () =>
   userAgent.match(/Android/i) ||
   userAgent.match(/webOS/i) ||
   userAgent.match(/iPhone/i) ||
   userAgent.match(/iPad/i) ||
   userAgent.match(/iPod/i) ||
   userAgent.match(/BlackBerry/i) ||
-  userAgent.match(/Windows Phone/i)
-);
+  userAgent.match(/Windows Phone/i);
 
 let viewportHeight, viewableRatio;
 let contentHeight, scrollHeight;
@@ -52,7 +74,7 @@ const refreshScroll = () => {
   viewableRatio = viewportHeight / contentHeight;
   scrollHeight = panelScroll.offsetHeight;
   thumbHeight = scrollHeight * viewableRatio;
-  thumbPosition = controlBrowse.scrollTop * thumbHeight / viewportHeight;
+  thumbPosition = (controlBrowse.scrollTop * thumbHeight) / viewportHeight;
   controlScroll.style.top = thumbPosition + 'px';
   controlScroll.style.height = thumbHeight + 'px';
 };
@@ -76,15 +98,14 @@ const showKeyboard = () => {
   controlBrowse.style.bottom = controlKeyboard.offsetHeight + 'px';
 };
 
-const inputSetValue = value => {
+const inputSetValue = (value) => {
   controlInput.inputValue = value;
   if (controlInput.inputType === 'masked') {
     value = pad('*', value.length);
   }
   value = value.replace(/ /g, '&nbsp;');
-  controlInput.innerHTML = (
-    controlInput.inputPrompt + value + '<span>&block;</span>'
-  );
+  controlInput.innerHTML =
+    controlInput.inputPrompt + value + '<span>&block;</span>';
 };
 
 const input = (type, prompt, callback) => {
@@ -180,15 +201,16 @@ const inputKeyboardEvents = {
       controlKeyboard.className = 'caps';
     }
   },
-  KEY(char) { // Alpha or Digit
+  KEY(char) {
+    // Alpha or Digit
     if (controlKeyboard.className === 'caps') {
       char = char.toUpperCase();
     }
     inputSetValue(controlInput.inputValue + char);
-  }
+  },
 };
 
-const keyboardClick = e => {
+const keyboardClick = (e) => {
   let char = e.target.inputChar;
   if (char === '_') char = ' ';
   let keyName = 'KEY';
@@ -208,7 +230,7 @@ const initKeyboard = () => {
     '1234567890',
     'qwertyuiop',
     'asdfghjkl<',
-    '^zxcvbnm_>'
+    '^zxcvbnm_>',
   ];
   for (let i = 0; i < KEYBOARD_LAYOUT.length; i++) {
     const keyboardLine = KEYBOARD_LAYOUT[i];
@@ -221,7 +243,7 @@ const initKeyboard = () => {
       elementKey.innerHTML = char;
       elementKey.inputChar = char;
       elementKey.className = 'key';
-      elementKey.style.opacity = ((i + j) % 2) ? 0.8 : 1;
+      elementKey.style.opacity = (i + j) % 2 ? 0.8 : 1;
       elementKey.addEventListener('click', keyboardClick);
       elementLine.appendChild(elementKey);
     }
@@ -229,7 +251,7 @@ const initKeyboard = () => {
   controlBrowse.style.bottom = controlKeyboard.offsetHeight + 'px';
 };
 
-document.onkeydown = event => {
+document.onkeydown = (event) => {
   if (controlInput.inputActive) {
     const keyName = KEY_NAME[event.keyCode];
     const fn = inputKeyboardEvents[keyName];
@@ -240,7 +262,7 @@ document.onkeydown = event => {
   }
 };
 
-document.onkeypress = event => {
+document.onkeypress = (event) => {
   if (controlInput.inputActive) {
     const fn = inputKeyboardEvents['KEY'];
     const char = String.fromCharCode(event.keyCode);
@@ -251,10 +273,10 @@ document.onkeypress = event => {
   }
 };
 
-const blobToBase64 = blob => {
+const blobToBase64 = (blob) => {
   const reader = new FileReader();
   reader.readAsDataURL(blob);
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     reader.onloadend = () => {
       resolve(reader.result);
     };
@@ -262,11 +284,10 @@ const blobToBase64 = blob => {
 };
 
 const uploadFile = (file, done) => {
-  blobToBase64(file)
-    .then(url => {
-      const data = url.substring(url.indexOf(',') + 1);
-      api.example.uploadFile({ name: file.name, data }).then(done);
-    });
+  blobToBase64(file).then((url) => {
+    const data = url.substring(url.indexOf(',') + 1);
+    api.example.uploadFile({ name: file.name, data }).then(done);
+  });
 };
 
 const saveFile = (fileName, blob) => {
@@ -308,7 +329,7 @@ const upload = () => {
   };
 };
 
-const exec = async line => {
+const exec = async (line) => {
   const args = line.split(' ');
   if (args[0] === 'upload') {
     upload();

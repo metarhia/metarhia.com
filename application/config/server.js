@@ -8,5 +8,5 @@
   queue: {
     size: 2000,
     timeout: 3000,
-  }
+  },
 });
