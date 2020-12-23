@@ -7,12 +7,14 @@ we did 269 meetups and 162 lectures. We have 5 Node.js contributors,
 44 collaborators of Metarhia technology stack, and >100 contributors.
 
 Activities:
+
 - Academic fields: research, education and open lectures
 - Open source contribution e.g. Node.js, Impress, Metasync, etc.
 - Software development
 - Expertise and services
 
 Metarhia provides following services:
+
 - Software audit, quality control and code review
 - Business processes analysis
 - Architecture solutions and consulting

@@ -11,29 +11,30 @@ government IT, corporate applications, ERP, SCM, CRM, big-data and
 big-memory, etc.
 
 Key technology features:
+
 - Interactivity: millions of long-lived connections for interactive
-real-time communication;
+  real-time communication;
 - Private clouds: ready-to-use software solutions to build private
-clouds and host applications;
+  clouds and host applications;
 - Security: code isolation, application firewall, and architecture-
-level safety;
+  level safety;
 - Business freedom: transparent scaling, no vendor lock.
-Full control over your cloud;
+  Full control over your cloud;
 - No warming issues: due to quick resource redistribution and
-reservation, as well as autoscaling;
+  reservation, as well as autoscaling;
 - Enterprise-ready IT solution. Distributed in-memory databases
-combined with runtime and application server;
+  combined with runtime and application server;
 - Stateful for Node.js: true stateful approach for distributed
-databases and persistent-data application;
+  databases and persistent-data application;
 - Community: we have software community over 20.000 engineers,
-education programs and certification;
+  education programs and certification;
 - Effectiveness: up to x10 server effectiveness. Optimized TTM,
-focus on the business/product;
+  focus on the business/product;
 - Architecture: integral application architecture (not just cloud
-functions), big picture & application servers;
+  functions), big picture & application servers;
 - Unification: single language, single runtime, single API, single
-code, multiple unified instances.
+  code, multiple unified instances.
 - Homogeneity of server infrastructure; No back compatibility
-(no legacy support);
+  (no legacy support);
 
 Back to [home](home.md) page.
