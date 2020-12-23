@@ -1,6 +1,7 @@
 # Сollaboration offer for an enterprise
 
 We have experience in software fields:
+
 - Highload applications, scaling and performance optimization
 - Corporate applications, databases and information systems
 - Systems architecture and system integration
@@ -14,6 +15,7 @@ We have experience in software fields:
 - Embedded systems, hardware and system programming
 
 Applied fields:
+
 - eGovernance information systems
 - Health information systems
 - Financial analytics and trading systems
