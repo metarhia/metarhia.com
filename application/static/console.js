@@ -151,7 +151,15 @@ const print = async (text = '') => {
     const char = text.charAt(i);
     i++;
     if (char === '\n') {
-      element.innerHTML += '<br/>';
+      const next = text.charAt(i);
+      const prev = text.charAt(i - 2);
+      element.innerHTML +=
+        next === '\n' ||
+        prev === '\n' ||
+        next === '-' ||
+        (next >= 0 && next <= 9)
+          ? '<br/>'
+          : ' ';
     } else if (char === '#' && i === 1) {
       const titleEnd = text.indexOf('\n');
       document.title = text.substring(i, titleEnd);
