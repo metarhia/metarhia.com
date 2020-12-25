@@ -153,13 +153,10 @@ const print = async (text = '') => {
     if (char === '\n') {
       const next = text.charAt(i);
       const prev = text.charAt(i - 2);
-      element.innerHTML +=
-        next === '\n' ||
-        prev === '\n' ||
-        next === '-' ||
-        (next >= 0 && next <= 9)
-          ? '<br/>'
-          : ' ';
+      let html = ' ';
+      if (next === '\n' || prev === '\n') html = '<br/>';
+      if (next === '-' || (next >= 0 && next <= 9)) html = '<br/>';
+      element.innerHTML += html;
     } else if (char === '#' && i === 1) {
       const titleEnd = text.indexOf('\n');
       document.title = text.substring(i, titleEnd);
