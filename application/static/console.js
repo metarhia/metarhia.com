@@ -138,7 +138,14 @@ const sleep = (msec) =>
   });
 
 const followLink = async (event) => {
-  const name = event.target.getAttribute('data-link').slice(0, -3);
+  const link = event.target.getAttribute('data-link');
+  const mailto = link.startsWith('mailto:');
+  const web = link.startsWith('http:') || link.startsWith('https:');
+  if (mailto || web) {
+    window.open(link, '_blank');
+    return;
+  }
+  const name = link.substring(0, link.length - '.md'.length);
   const { text } = await api.console.content({ name });
   print(text);
 };
