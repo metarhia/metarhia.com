@@ -32,6 +32,21 @@ a {
   transition-duration: 0.4s;
   display: inline-block;
 }
+a.mail {
+  background: #FF7777;
+}
+a.web {
+  background: #3399FF;
+}
+a.base {
+  background: #7FD900;
+}
+a.partnership {
+  background: #FF9900;
+}
+a.services {
+  background: #009933;
+}
 a:hover {
   background: #FFFFFF;
 }

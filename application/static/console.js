@@ -137,15 +137,23 @@ const sleep = (msec) =>
     }, msec);
   });
 
+const urlKind = (url) => {
+  if (url.startsWith('mailto:')) return 'mail';
+  if (url.startsWith('http:')) return 'web';
+  if (url.startsWith('https:')) return 'web';
+  const k = url.indexOf('/');
+  if (k === -1) return 'base';
+  return url.substring(0, k);
+};
+
 const followLink = async (event) => {
-  const link = event.target.getAttribute('data-link');
-  const mailto = link.startsWith('mailto:');
-  const web = link.startsWith('http:') || link.startsWith('https:');
-  if (mailto || web) {
-    window.open(link, '_blank');
+  const url = event.target.getAttribute('data-link');
+  const kind = urlKind(url);
+  if (kind === 'mail' || kind === 'web') {
+    window.open(url, '_blank');
     return;
   }
-  const name = link.substring(0, link.length - '.md'.length);
+  const name = url.substring(0, url.length - '.md'.length);
   const { text } = await api.console.content({ name });
   print(text);
 };
@@ -172,8 +180,10 @@ const print = async (text = '') => {
       const labelEnd = text.indexOf(']', i);
       const linkEnd = text.indexOf(')', i);
       const label = text.substring(i, labelEnd);
-      const link = text.substring(labelEnd + 2, linkEnd);
-      element.innerHTML += `<a data-link="${link}">${label}</a>`;
+      const url = text.substring(labelEnd + 2, linkEnd);
+      const kind = urlKind(url);
+      const link = `<a data-link="${url}" class="${kind}">${label}</a>`;
+      element.innerHTML += link;
       i = linkEnd + 1;
     } else {
       element.innerHTML += char;
