@@ -1,19 +1,16 @@
 # Сollaboration offer for an individual beginner specialist
 
-Meetup Groups:
+Meetup groups:
 
-- https://www.meetup.com/HowProgrammingWorks
-- https://www.meetup.com/NodeUA
-- https://www.meetup.com/KievNodeJS
+- [HowProgrammingWorks](https://www.meetup.com/HowProgrammingWorks) meetup group
+- [NodeUA](https://www.meetup.com/NodeUA) meetup group
+- [KievNodeJS](https://www.meetup.com/KievNodeJS) meetup group (old, not active)
 
-Telegram Channels:
+Telegram channels and groups:
 
-- https://t.me/HowProgrammingWorks
-- https://t.me/metarhia
-
-Telegram Groups:
-
-- https://t.me/MetarhiaHPW
-- https://t.me/nodeua
+- [HowProgrammingWorks](https://t.me/HowProgrammingWorks) telegram channel
+- [HowProgrammingWorks](https://t.me/MetarhiaHPW) telegram group
+- [Metarhia](https://t.me/metarhia) telegram channel
+- [NodeUA](https://t.me/nodeua) and Metarhia telegram group
 
 Back to [home](home.md) page.
