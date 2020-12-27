@@ -6,6 +6,7 @@ const ALPHA = ALPHA_UPPER + ALPHA_LOWER;
 const DIGIT = '0123456789';
 const CHARS = ALPHA + DIGIT;
 const TIME_CHAR = 5;
+const LINE_LENGTH = 80;
 
 const KEY_CODE = {
   BACKSPACE: 8,
@@ -345,33 +346,42 @@ class Application {
     const element = document.createElement('div');
     this.controlBrowse.insertBefore(element, this.controlInput);
     let i = 0;
+    let word = '';
+    const output = async () => {
+      if (word === '') return;
+      element.innerHTML += word;
+      word = '';
+      await sleep(TIME_CHAR);
+    };
     while (i < text.length) {
       const char = text.charAt(i);
       i++;
       if (char === '\n') {
+        await output();
         const next = text.charAt(i);
         const prev = text.charAt(i - 2);
-        let html = ' ';
-        if (next === '\n' || prev === '\n') html = '<br/>';
-        if (next === '-' || (next >= 0 && next <= 9)) html = '<br/>';
-        element.innerHTML += html;
+        word = ' ';
+        if (next === '\n' || prev === '\n') word = '<br/>';
+        if (next === '-' || (next >= 0 && next <= 9)) word = '<br/>';
+        await output();
       } else if (char === '#' && i === 1) {
         const titleEnd = text.indexOf('\n');
         document.title = text.substring(i, titleEnd);
         i = titleEnd + 1;
       } else if (char === '[') {
+        await output();
         const labelEnd = text.indexOf(']', i);
         const linkEnd = text.indexOf(')', i);
         const label = text.substring(i, labelEnd);
         const url = text.substring(labelEnd + 2, linkEnd);
         const kind = urlKind(url);
-        const link = `<a data-link="${url}" class="${kind}">${label}</a>`;
-        element.innerHTML += link;
+        word = `<a data-link="${url}" class="${kind}">${label}</a>`;
         i = linkEnd + 1;
+        await output();
       } else {
-        element.innerHTML += char;
+        word += char;
+        if (word.length >= LINE_LENGTH) await output();
       }
-      await sleep(TIME_CHAR);
       const top = this.controlBrowse.scrollHeight;
       this.controlBrowse.scrollTop = top;
       this.scroller.scrollBottom();
