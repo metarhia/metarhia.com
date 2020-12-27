@@ -6,7 +6,6 @@ const ALPHA = ALPHA_UPPER + ALPHA_LOWER;
 const DIGIT = '0123456789';
 const CHARS = ALPHA + DIGIT;
 const TIME_CHAR = 5;
-const LINE_LENGTH = 80;
 
 const KEY_CODE = {
   BACKSPACE: 8,
@@ -380,7 +379,6 @@ class Application {
         await output();
       } else {
         word += char;
-        if (word.length >= LINE_LENGTH) await output();
       }
       const top = this.controlBrowse.scrollHeight;
       this.controlBrowse.scrollTop = top;
