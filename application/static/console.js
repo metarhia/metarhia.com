@@ -236,15 +236,15 @@ class Keyboard {
         elementLine.appendChild(elementKey);
       }
     }
-    application.controlBrowse.style.bottom =
-      this.controlKeyboard.offsetHeight + 'px';
+    const down = this.controlKeyboard.offsetHeight + 'px';
+    application.controlBrowse.style.bottom = down;
   }
 
   showKeyboard() {
     if (!isMobile()) return;
     this.controlKeyboard.style.display = 'block';
-    application.controlBrowse.style.bottom =
-      this.controlKeyboard.offsetHeight + 'px';
+    const down = this.controlKeyboard.offsetHeight + 'px';
+    application.controlBrowse.style.bottom = down;
   }
 }
 
@@ -258,8 +258,8 @@ class Scroller {
     this.thumbPosition = 0;
     this.panelScroll = document.getElementById('panelScroll');
     this.controlScroll = document.getElementById('controlScroll');
-    application.controlBrowse.scrollTop =
-      application.controlBrowse.scrollHeight;
+    const height = application.controlBrowse.scrollHeight;
+    application.controlBrowse.scrollTop = height;
     application.controlBrowse.addEventListener('scroll', () => {
       this.refreshScroll();
     });
@@ -276,17 +276,16 @@ class Scroller {
     this.viewableRatio = this.viewportHeight / this.contentHeight;
     this.scrollHeight = this.panelScroll.offsetHeight;
     this.thumbHeight = this.scrollHeight * this.viewableRatio;
-    this.thumbPosition = (
-      application.controlBrowse.scrollTop * this.thumbHeight
-    ) / this.viewportHeight;
+    const top = application.controlBrowse.scrollTop;
+    this.thumbPosition = (top * this.thumbHeight) / this.viewportHeight;
     this.controlScroll.style.top = this.thumbPosition + 'px';
     this.controlScroll.style.height = this.thumbHeight + 'px';
   }
 
   scrollBottom() {
     this.refreshScroll();
-    application.controlBrowse.scrollTop =
-      application.controlBrowse.scrollHeight;
+    const top = application.controlBrowse.scrollHeight;
+    application.controlBrowse.scrollTop = top;
   }
 }
 
@@ -321,8 +320,8 @@ class Application {
       value = pad('*', value.length);
     }
     value = value.replace(/ /g, '&nbsp;');
-    this.controlInput.innerHTML =
-      this.controlInput.inputPrompt + value + '<span>&block;</span>';
+    const html = this.controlInput.inputPrompt + value + '<span>&block;</span>';
+    this.controlInput.innerHTML = html;
   }
 
   input(type, prompt, callback) {
@@ -372,8 +371,8 @@ class Application {
         element.innerHTML += char;
       }
       await sleep(TIME_CHAR);
-      this.controlBrowse.scrollTop =
-        this.controlBrowse.scrollHeight;
+      const top = this.controlBrowse.scrollHeight;
+      this.controlBrowse.scrollTop = top;
       this.scroller.scrollBottom();
     }
     const links = element.querySelectorAll('a');
