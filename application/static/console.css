@@ -11,7 +11,7 @@ a, a * {
 html, body {
   padding: 0;
   margin: 0;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: 'Share Tech Mono';
   font-size: 12pt;
   overflow: hidden;
   height: 100%;
@@ -27,7 +27,7 @@ a {
   padding: 1px 4px;
   margin: 1px 0;
   border: 0px;
-  font-family: 'Share Tech Mono', monospace;
+  font-family: 'Share Tech Mono';
   font-size: 12pt;
   transition-duration: 0.4s;
   display: inline-block;
@@ -39,10 +39,10 @@ a.web {
   background: #3399FF;
 }
 a.base {
-  background: #7FD900;
+  background: #F2F200;
 }
 a.partnership {
-  background: #FF9900;
+  background: #FF6600;
 }
 a.services {
   background: #009933;
@@ -98,7 +98,7 @@ ul,ol {
   position: absolute;
   left: 8px;
   right: 8px;
-  top: 8px;
+  top: 6px;
   bottom: 0;
 }
 #panelScroll {
@@ -118,11 +118,12 @@ ul,ol {
   height: 25pt;
 }
 #controlShadow {
+  background: #000;
   position: absolute;
-  top: -10px;
+  top: -5px;
   left: 0;
   right: 0;
-  height: 10px;
+  height: 70px;
   box-shadow: 0px 0px 20px 6px rgba(0,0,0,1);
   z-index: 1;
 }
