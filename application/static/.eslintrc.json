@@ -4,5 +4,9 @@
   },
   "rules": {
     "id-denylist": [0]
+  },
+  "globals": {
+    "application": "readonly",
+    "api": "readonly"
   }
 }
