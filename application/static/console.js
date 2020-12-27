@@ -219,7 +219,6 @@ class Keyboard {
   constructor(application) {
     this.controlKeyboard = document.getElementById('controlKeyboard');
     if (!isMobile()) return;
-    this.controlKeyboard.style.display = 'block';
     for (let i = 0; i < KEYBOARD_LAYOUT.length; i++) {
       const keyboardLine = KEYBOARD_LAYOUT[i];
       const elementLine = document.createElement('div');
@@ -236,15 +235,18 @@ class Keyboard {
         elementLine.appendChild(elementKey);
       }
     }
+    this.controlKeyboard.style.display = 'none';
+  }
+
+  show() {
+    this.controlKeyboard.style.display = 'block';
     const down = this.controlKeyboard.offsetHeight + 'px';
     application.controlBrowse.style.bottom = down;
   }
 
-  showKeyboard() {
-    if (!isMobile()) return;
-    this.controlKeyboard.style.display = 'block';
-    const down = this.controlKeyboard.offsetHeight + 'px';
-    application.controlBrowse.style.bottom = down;
+  hide() {
+    this.controlKeyboard.style.display = 'none';
+    application.controlBrowse.style.bottom = '0';
   }
 }
 
@@ -325,7 +327,6 @@ class Application {
   }
 
   input(type, prompt, callback) {
-    this.keyboard.showKeyboard();
     this.controlInput.style.display = 'none';
     this.controlBrowse.removeChild(this.controlInput);
     this.controlInput.inputActive = true;
