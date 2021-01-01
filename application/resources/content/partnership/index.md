@@ -1,4 +1,4 @@
-# Сollaboration and partnership
+# Collaboration and partnership
 
 Collaboration offers for:
 [🗃️ project](partnership/project.md),

@@ -1,4 +1,4 @@
-# Сollaboration offer for a project
+# collaboration offer for a project
 
 We propose Architecture and R&D as a Service. Use best practices from the
 creators of Metarhia & Node.js. Don’t make in-house architecture and system

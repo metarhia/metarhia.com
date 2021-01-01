@@ -1,4 +1,4 @@
-# Сollaboration offer for an enterprise
+# Collaboration offer for an enterprise
 
 We have experience in software fields:
 
