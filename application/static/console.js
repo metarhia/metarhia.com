@@ -363,10 +363,6 @@ class Application {
         if (next === '\n' || prev === '\n') word = '<br/>';
         if (next === '-' || (next >= 0 && next <= 9)) word = '<br/>';
         await output();
-      } else if (char === '#' && i === 1) {
-        const titleEnd = text.indexOf('\n');
-        document.title = text.substring(i, titleEnd);
-        i = titleEnd + 1;
       } else if (char === '[') {
         await output();
         const labelEnd = text.indexOf(']', i);
