@@ -1,4 +1,4 @@
-# Сollaboration offer for an individual beginner specialist
+# Collaboration offer for an individual beginner specialist
 
 Meetup groups:
 
@@ -12,5 +12,3 @@ Telegram channels and groups:
 - [HowProgrammingWorks](https://t.me/MetarhiaHPW) telegram group
 - [Metarhia](https://t.me/metarhia) telegram channel
 - [NodeUA](https://t.me/nodeua) and Metarhia telegram group
-
-Back to [home](home.md) page.

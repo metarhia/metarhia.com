@@ -1,4 +1,4 @@
-# Сollaboration offer for an experienced professional
+# Collaboration offer for an experienced professional
 
 Our vision is to combine wide experience and respectful practices of
 enterprise-level development and computer science with cutting-edge technologies

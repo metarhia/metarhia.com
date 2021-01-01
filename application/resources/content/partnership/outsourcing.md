@@ -1,4 +1,4 @@
-# Сollaboration offer for an outsourcing company
+# Collaboration offer for an outsourcing company
 
 We propose knowledge transfer and access to top talents and experts. Use best
 practices from the creators of Metarhia & Node.js. Our mission is to make Node.js

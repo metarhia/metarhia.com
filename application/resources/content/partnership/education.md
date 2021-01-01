@@ -1,3 +1,3 @@
-# Сollaboration offer for an educational organization
+# Collaboration offer for an educational organization
 
 Back to [home](home.md) page.
