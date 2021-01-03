@@ -1,5 +1,3 @@
-# Metarhia
-
 Metarhia is a [🌍 community](community/index.md),
 a [⚙️ technology stack](technology/index.md) and
 [🛠️ R&D center](rnd.md) for cloud computing, high-intensive network

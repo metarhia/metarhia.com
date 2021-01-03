@@ -98,8 +98,11 @@ ul,ol {
   position: absolute;
   left: 8px;
   right: 8px;
-  top: 6px;
+  top: 0;
   bottom: 0;
+}
+#colsoleIndent {
+  height: 75px;
 }
 #panelScroll {
   height: 100%;
@@ -120,7 +123,7 @@ ul,ol {
 #controlShadow {
   background: #000;
   position: absolute;
-  top: -5px;
+  top: 0;
   left: 0;
   right: 0;
   height: 68px;
