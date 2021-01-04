@@ -363,6 +363,14 @@ class Application {
         if (next === '\n' || prev === '\n') word = '<br/>';
         if (next === '-' || (next >= 0 && next <= 9)) word = '<br/>';
         await output();
+      } else if (char === '#') {
+        await output();
+        const headerStart = text.indexOf(' ', i) + 1;
+        const headerEnd = text.indexOf('\n', i);
+        const header = text.substring(headerStart, headerEnd);
+        word = `<span class="header">${header}</span>`;
+        i = headerEnd;
+        await output();
       } else if (char === '[') {
         await output();
         const labelEnd = text.indexOf(']', i);
@@ -380,6 +388,7 @@ class Application {
       this.controlBrowse.scrollTop = top;
       this.scroller.scrollBottom();
     }
+    element.innerHTML += '<br/>';
     const links = element.querySelectorAll('a');
     for (const link of links) {
       link.onclick = followLink;

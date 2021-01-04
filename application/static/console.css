@@ -189,3 +189,7 @@ ul,ol {
 #controlBrowseSpacer {
   height: 100%;
 }
+.header {
+  color: #fff;
+  font-weight: bold;
+}
