@@ -7,4 +7,4 @@
 - Node.js applied software engineering
 - Node.js system software engineering
 
-Back to [home](home.md) page.
+Please [📫 contact](contacts.md) our coordinator for more info.
