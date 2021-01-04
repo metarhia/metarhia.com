@@ -56,4 +56,4 @@ Companies, products, projects and startups:
 8. Code review, refactoring proposals, project audit & security audit;
 9. Introduce knowledge-driven management and enthusiastic motivation;
 
-Back to [home](home.md) page.
+Please [📫 contact](contacts.md) our coordinator for more info.

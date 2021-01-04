@@ -1,3 +1,3 @@
 # Collaboration offer for an educational organization
 
-Back to [home](home.md) page.
+Please [📫 contact](contacts.md) our coordinator for more info.
