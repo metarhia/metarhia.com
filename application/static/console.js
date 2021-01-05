@@ -90,6 +90,25 @@ const followLink = async (event) => {
   application.print(text);
 };
 
+const followLastMore = () => {
+  const mores = document.querySelectorAll('#panelConsole a.more');
+  if (mores.length === 0) return;
+  const text = mores[mores.length - 1].getAttribute('data-text');
+  for (const more of mores) more.parentElement.remove();
+  application.print(text);
+};
+
+const removeMores = () => {
+  const mores = document.querySelectorAll('#panelConsole a.more');
+  for (const more of mores) more.parentElement.remove();
+};
+
+const moreLink = (event) => {
+  const text = event.target.getAttribute('data-text');
+  event.target.parentElement.remove();
+  application.print(text);
+};
+
 const blobToBase64 = (blob) => {
   const reader = new FileReader();
   reader.readAsDataURL(blob);
@@ -104,6 +123,9 @@ const inputKeyboardEvents = {
   ESC() {
     application.clear();
     application.inputSetValue('');
+  },
+  SPACE() {
+    followLastMore();
   },
   BACKSPACE() {
     application.inputSetValue(application.controlInput.inputValue.slice(0, -1));
@@ -341,7 +363,20 @@ class Application {
     }, 0);
   }
 
+  more(text = '') {
+    const element = document.createElement('div');
+    this.controlBrowse.insertBefore(element, this.controlInput);
+    const label = '--More--';
+    element.innerHTML = `<a data-text="${text}" class="more">${label}</a>`;
+    const [link] = element.querySelectorAll('a');
+    link.onclick = moreLink;
+    const top = this.controlBrowse.scrollHeight;
+    this.controlBrowse.scrollTop = top;
+    this.scroller.scrollBottom();
+  }
+
   async print(text = '') {
+    removeMores();
     const element = document.createElement('div');
     this.controlBrowse.insertBefore(element, this.controlInput);
     let i = 0;
@@ -365,6 +400,10 @@ class Application {
         await output();
       } else if (char === '#') {
         await output();
+        if (i > 1) {
+          this.more(text.substring(i));
+          break;
+        }
         const headerStart = text.indexOf(' ', i) + 1;
         const headerEnd = text.indexOf('\n', i);
         const header = text.substring(headerStart, headerEnd);
@@ -388,7 +427,12 @@ class Application {
       this.controlBrowse.scrollTop = top;
       this.scroller.scrollBottom();
     }
-    element.innerHTML += '<br/>';
+    if (i >= text.length) {
+      element.innerHTML += '<br/>';
+      const top = this.controlBrowse.scrollHeight;
+      this.controlBrowse.scrollTop = top;
+      this.scroller.scrollBottom();
+    }
     const links = element.querySelectorAll('a');
     for (const link of links) {
       link.onclick = followLink;
@@ -405,9 +449,6 @@ class Application {
     } else if (args[0] === 'counter') {
       const packet = await api.example.counter();
       application.print(`counter: ${packet.result}`);
-    } else {
-      const data = await api.cms.content(args);
-      application.print(data);
     }
     commandLoop();
   }
