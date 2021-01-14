@@ -4,7 +4,7 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "theme_color": "#009933"
+  "theme_color": "#009933",
   "background_color": "#552277",
   "description": "Metarhia community and technology stack",
   "categories": ["node.js", "javascript", "technology stack", "community"],
