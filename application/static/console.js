@@ -462,3 +462,7 @@ window.addEventListener('load', async () => {
   application.print(text);
   commandLoop();
 });
+
+if (navigator.serviceWorker) {
+  navigator.serviceWorker.register('/worker.js');
+}
