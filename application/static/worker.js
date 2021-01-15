@@ -15,7 +15,7 @@ self.addEventListener('install', async (event) => {
   event.waitUntil(cache.addAll(files));
 });
 
-self.addEventListener('fetch', async (request) => {
+self.addEventListener('fetch', async ({ request }) => {
   const cache = await caches.open('metarhia');
   const cached = await cache.match(request);
   if (cached) return cached;
