@@ -8,5 +8,5 @@
 
 ## License
 
-Copyright (c) 2020 Metarhia contributors.
+Copyright (c) 2020-2021 Metarhia contributors.
 This starter kit is [MIT licensed](./LICENSE).
