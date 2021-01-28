@@ -11,3 +11,7 @@ curl -O https://dl.eff.org/certbot-auto
 chmod a+x certbot-auto
 ./certbot-auto certonly
 ```
+
+## Self-signed (for testing)
+
+- Run `./generate.sh` in this directory
