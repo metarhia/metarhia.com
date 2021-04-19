@@ -53,7 +53,6 @@ export class Metacom extends EventEmitter {
     this.callTimeout = options.callTimeout || CALL_TIMEOUT;
     this.pingInterval = options.pingInterval || PING_INTERVAL;
     this.reconnectTimeout = options.reconnectTimeout || RECONNECT_TIMEOUT;
-    this.open();
   }
 
   static create(url, options) {
