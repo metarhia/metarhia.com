@@ -32,7 +32,7 @@
     "fmt": "prettier --write \"**/*.js\" \"**/*.json\" \"**/*.md\" \".*rc\""
   },
   "dependencies": {
-    "impress": "^2.2.0"
+    "impress": "^2.3.0"
   },
   "devDependencies": {
     "eslint": "^7.24.0",
