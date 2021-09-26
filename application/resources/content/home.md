@@ -11,3 +11,4 @@ a team.
 - What we propose: see [🤝 collaboration](partnership/index.md) opportunities.
 - What we do: see [✨ services](services/index.md).
 - [📫 Contact](contacts.md) our coordinator for more info.
+- What you need: [🎓 mentoring](services/mentoring.md).

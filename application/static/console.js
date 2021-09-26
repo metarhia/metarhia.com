@@ -413,10 +413,17 @@ class Application {
       } else if (char === '[') {
         await output();
         const labelEnd = text.indexOf(']', i);
-        const linkEnd = text.indexOf(')', i);
         const label = text.substring(i, labelEnd);
-        const url = text.substring(labelEnd + 2, linkEnd);
-        const kind = urlKind(url);
+        let linkEnd = text.indexOf(')', i);
+        const chatEnd = text.indexOf('}', i);
+        let kind = 'unknown';
+        if (chatEnd >= 0 && chatEnd < linkEnd) {
+          kind = 'chat';
+          linkEnd = chatEnd;
+        }
+        let url = text.substring(labelEnd + 2, linkEnd);
+        if (kind === 'chat') url = 'https://t.me/' + url;
+        else kind = urlKind(url);
         word = `<a data-link="${url}" class="${kind}">${label}</a>`;
         i = linkEnd + 1;
         await output();

@@ -10,8 +10,8 @@ transformation. We are experienced in development and system integration.
 
 ## Activities and services
 
-We do research, open education programs, free lectures and custom
-[🎓 trainings](services/training.md), recruiting, system
+We do research, open education programs, [🎓 mentoring](services/mentoring.md),
+free lectures and custom [🎓 trainings](services/training.md), recruiting, system
 [📐 programming](services/programming.md), open source contribution e.g. node.js,
 impress, metasync, etc.; technology [💬 support](services/support.md),
 codebase [👁️ audit](services/audit.md), quality control and code review,
