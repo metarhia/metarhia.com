@@ -23,5 +23,7 @@
   },
   workers: {
     pool: 0,
+    wait: 2000,
+    timeout: 5000,
   },
 });
