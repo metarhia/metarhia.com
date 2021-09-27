@@ -15,6 +15,22 @@ Cities:
 [🏙️ Kharkov]{joinchat/JGXPU_GZUYoyNDE6}
 [🏙️ Lviv]{joinchat/08PKA8pWIPU0MDgy}
 
+Metarhia subsystems:
+[🔐 AAA Subsystem]{joinchat/hVAozLWVq581MGMy}
+[📯 Metanet]{joinchat/wUrZxv0WexM0ODA6}
+[🤖 Chats and Bots]{joinchat/O-k-g7r4p-Y2NmYy}
+[📁 Metanet Files]{joinchat/1Gyj_DYrIlNkYjEy}
+[✉️ Metanet Mail]{joinchat/YYPK6Wm8ompjMmIy}
+[👁️ Monitoring]{joinchat/4YXl7mZ72WJiNTNi}
+[🪙 Payment Integration]{joinchat/C0eTgGv7KwNhODFi}
+[🧪 Metatests]{joinchat/2RLxBESTlRRhZjUy}
+[🐘 Metasql]{joinchat/pQX8DPQbEHw0NTIy}
+[💡 Metaschema]{joinchat/PnnnBfuKBkc0YTdi}
+[🔌 Metacom]{joinchat/y8YHMD-_OS5mMGQy}
+[⚡ Impress]{joinchat/P9N-CU0RggM2MjFi}
+[🧰 Metautil]{joinchat/zxzGipd6shlkZGZi}
+[🌍 Globalstorage]{joinchat/2FjXFo6aERc1MjIy}
+
 Metahealth project:
 [💻 Backend API]{joinchat/m_yFHN77k_AzNzIy}
 [💻 Domain model]{joinchat/GBAUTtsEfGY0Y2Iy}
