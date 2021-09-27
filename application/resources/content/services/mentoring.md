@@ -14,6 +14,7 @@ Cities:
 [🏙️ Odessa]{joinchat/3yVc-kWsYENhMzUy}
 [🏙️ Kharkov]{joinchat/JGXPU_GZUYoyNDE6}
 [🏙️ Lviv]{joinchat/08PKA8pWIPU0MDgy}
+[🏙️ Piter]{joinchat/rf2UXW2eFrMyOWMy}
 
 Metarhia subsystems:
 [🔐 AAA Subsystem]{joinchat/hVAozLWVq581MGMy}
