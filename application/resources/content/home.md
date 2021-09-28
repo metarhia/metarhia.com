@@ -4,7 +4,7 @@ a [⚙️ technology stack](technology/index.md) and
 applications and distributed systems.
 
 We are not a company or a business, we are professionals. Our approach is to
-provide services based of open-source technologies and build a culture of
+provide services based on open-source technologies and build a culture of
 knowledge-driven development. We work as individuals but can do large things as
 a team.
 
