@@ -17,6 +17,7 @@ Cities:
 [🏙️ Piter]{joinchat/rf2UXW2eFrMyOWMy}
 
 Metarhia subsystems:
+[🌍 Internationalization]{joinchat/zZNKn2PcBYBhZGE6}
 [🔐 AAA Subsystem]{joinchat/hVAozLWVq581MGMy}
 [📯 Metanet]{joinchat/wUrZxv0WexM0ODA6}
 [🤖 Chats and Bots]{joinchat/O-k-g7r4p-Y2NmYy}
