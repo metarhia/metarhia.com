@@ -46,4 +46,8 @@ Metahealth project:
 [💻 Vue Components]{joinchat/jyTSrKj4Yts3MzYy}
 [💻 Angular Components]{joinchat/tpJmEGKZ0-gxOGMy}
 
+Other technology stacks:
+[🚀 Java]{joinchat/wHGaWUIpEvY5MTQy}
+[🚀 .NET and C Sharp]{joinchat/xnAxvTRsSHJiOWNi}
+
 Back to [home](home.md) page.
