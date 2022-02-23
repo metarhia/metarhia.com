@@ -10,7 +10,7 @@ Metarhia stack with rpc, events, and binary streams
 - [metarhia/config](https://github.com/metarhia/config) - Configuration loader
 - [metarhia/common](https://github.com/metarhia/common) - Common library
 - [metaschema](https://github.com/metarhia/metaschema) - Metadata schema and
-interface sefinition language (IDL)
+interface definition language (IDL)
 - [metawatch](https://github.com/metarhia/metawatch) - Nested directories watch
 for node.js
 
