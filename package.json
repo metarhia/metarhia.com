@@ -32,15 +32,15 @@
     "fmt": "prettier --write \"**/*.js\" \"**/*.json\" \"**/*.md\" \".*rc\""
   },
   "dependencies": {
-    "impress": "^2.6.6"
+    "impress": "^2.6.7"
   },
   "devDependencies": {
-    "eslint": "^7.32.0",
+    "eslint": "^8.11.0",
     "eslint-config-metarhia": "^7.0.1",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.25.2",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-prettier": "^4.0.0",
-    "metatests": "^0.7.2",
-    "prettier": "^2.4.1"
+    "metatests": "^0.8.2",
+    "prettier": "^2.6.0"
   }
 }
