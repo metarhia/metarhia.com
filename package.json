@@ -24,7 +24,7 @@
   "homepage": "https://github.com/metarhia/metarhia.com",
   "main": "server.js",
   "engines": {
-    "node": "^12.9 || 14 || 16 || 17"
+    "node": "^18.0"
   },
   "scripts": {
     "test": "npm run lint",
@@ -32,15 +32,15 @@
     "fmt": "prettier --write \"**/*.js\" \"**/*.json\" \"**/*.md\" \".*rc\""
   },
   "dependencies": {
-    "impress": "^2.6.7"
+    "impress": "^3.0.0-alpha.5"
   },
   "devDependencies": {
-    "eslint": "^8.11.0",
-    "eslint-config-metarhia": "^7.0.1",
+    "eslint": "^8.28.0",
+    "eslint-config-metarhia": "^8.1.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "metatests": "^0.8.2",
-    "prettier": "^2.6.0"
+    "prettier": "^2.7.1"
   }
 }
