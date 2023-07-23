@@ -3,7 +3,7 @@
 Common Groups:
 [💬 Global Channel]{metaedu}
 [💬 Global Chat]{joinchat/znsE73dPWLQ5Nzky}
-[💬 Newbies]{joinchat/_P6ynQcT6gQ4OGUy}
+[💬 Newbies]{joinchat/\_P6ynQcT6gQ4OGUy}
 [💬 Mentors]{joinchat/eLrAEPzZvC81NWUy}
 
 Cities:
@@ -28,7 +28,7 @@ Metarhia subsystems:
 [🧪 Metatests]{joinchat/2RLxBESTlRRhZjUy}
 [🐘 Metasql]{joinchat/pQX8DPQbEHw0NTIy}
 [💡 Metaschema]{joinchat/PnnnBfuKBkc0YTdi}
-[🔌 Metacom]{joinchat/y8YHMD-_OS5mMGQy}
+[🔌 Metacom]{joinchat/y8YHMD-\_OS5mMGQy}
 [⚡ Impress]{joinchat/P9N-CU0RggM2MjFi}
 [🧰 Metautil]{joinchat/zxzGipd6shlkZGZi}
 [🌍 Globalstorage]{joinchat/2FjXFo6aERc1MjIy}
