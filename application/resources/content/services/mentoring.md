@@ -6,16 +6,6 @@ Common Groups:
 [💬 Newbies]{joinchat/\_P6ynQcT6gQ4OGUy}
 [💬 Mentors]{joinchat/eLrAEPzZvC81NWUy}
 
-Cities:
-[🏙️ Kiev]{joinchat/qAKpm5byRqQxNWZi}
-[🏙️ Kiev Kids]{joinchat/Vnv-Ot_J4jw3MDVi}
-[🏙️ Moscow]{joinchat/BQY_GMG9Jes5NTBi}
-[🏙️ Minsk]{joinchat/rd7QqJz4iIBmM2Yy}
-[🏙️ Odessa]{joinchat/3yVc-kWsYENhMzUy}
-[🏙️ Kharkov]{joinchat/JGXPU_GZUYoyNDE6}
-[🏙️ Lviv]{joinchat/08PKA8pWIPU0MDgy}
-[🏙️ Piter]{joinchat/rf2UXW2eFrMyOWMy}
-
 Metarhia subsystems:
 [🌍 Internationalization]{joinchat/zZNKn2PcBYBhZGE6}
 [🔐 AAA Subsystem]{joinchat/hVAozLWVq581MGMy}
@@ -45,9 +35,5 @@ Metahealth project:
 [💻 React Components]{joinchat/M32OghhNU2U5MzIy}
 [💻 Vue Components]{joinchat/jyTSrKj4Yts3MzYy}
 [💻 Angular Components]{joinchat/tpJmEGKZ0-gxOGMy}
-
-Other technology stacks:
-[🚀 Java]{joinchat/wHGaWUIpEvY5MTQy}
-[🚀 .NET and C Sharp]{joinchat/xnAxvTRsSHJiOWNi}
 
 Back to [home](home.md) page.
