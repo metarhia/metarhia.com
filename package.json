@@ -28,7 +28,7 @@
   },
   "main": "server.js",
   "engines": {
-    "node": "^18.15 || 20 || 21"
+    "node": "^18.15 || 20 || 21 || 22 || 23 || 24"
   },
   "scripts": {
     "test": "npm run lint",
