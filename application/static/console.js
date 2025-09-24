@@ -155,6 +155,7 @@ document.onkeydown = (event) => {
       return false;
     }
   }
+  return true;
 };
 
 document.onkeypress = (event) => {
@@ -166,6 +167,7 @@ document.onkeypress = (event) => {
       return false;
     }
   }
+  return true;
 };
 
 const keyboardClick = (e) => {
@@ -259,6 +261,10 @@ class Scroller {
 
 function commandLoop() {
   application.input('command', '.', (err, line) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
     console.log(line);
     commandLoop();
   });
