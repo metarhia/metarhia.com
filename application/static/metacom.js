@@ -272,7 +272,7 @@ class HttpTransport extends Metacom {
     }).then((res) =>
       res.text().then((packet) => {
         this.message(packet);
-      })
+      }),
     );
   }
 }
