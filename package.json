@@ -44,7 +44,7 @@
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prettier": "^5.4.1",
-    "metatests": "^0.8.2",
+    "metatests": "^0.9.1",
     "prettier": "^3.5.3"
   }
 }
