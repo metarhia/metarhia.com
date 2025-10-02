@@ -1,0 +1,3 @@
+async () => {
+  domain.chat.start();
+};
