@@ -2,7 +2,7 @@ interface User {
   nick: string;
   uuid: string;
   rooms: Set<Room>;
-  emit(event: string, data: any): void;
+  client: metacom.Client | null;
 }
 
 interface Room {
@@ -11,12 +11,14 @@ interface Room {
   messages: Message[];
 }
 
+type Nicknames = Set<string>;
+
 interface Message {
   nick: string;
   content: string;
   timestamp: number;
   reactions: Record<string, number>;
-  votes: Map<string, Set<string>>;
+  votes: Map<string, Nicknames>;
 }
 
 interface RoomData {
@@ -35,7 +37,7 @@ interface ChatDomain {
   rooms: Map<string, Room>;
   getRoom(roomName: string): Room;
   dropRoom(roomName: string): void;
-  getUser(nick: string, uuid?: string): User;
+  getUser(nick: string, uuid: string): User | null;
   joinRoom(user: User, roomName: string): Room | null;
   leaveRoom(user: User, roomName: string): void;
   sendMessage(room: Room, user: User, content: string): void;

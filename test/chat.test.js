@@ -99,11 +99,13 @@ beforeEach(async () => {
 });
 
 test('getUser returns same user and assigns uuid', () => {
-  const u1 = chat.getUser('alice');
-  const u2 = chat.getUser('alice');
+  const uuid = crypto.randomUUID();
+  const u1 = chat.getUser('alice', uuid);
+  const u2 = chat.getUser('alice', uuid);
   assert.equal(u1, u2);
   assert.equal(u1.nick, 'alice');
   assert.equal(typeof u1.uuid, 'string');
+  assert.equal(u1.uuid.length, 36);
 });
 
 test('getRoom creates and reuses room', () => {
@@ -116,7 +118,7 @@ test('getRoom creates and reuses room', () => {
 });
 
 test('joinRoom/leaveRoom manage memberships', () => {
-  const user = chat.getUser('bob');
+  const user = chat.getUser('bob', crypto.randomUUID());
   const room = chat.joinRoom(user, 'general');
   assert.ok(room.users.has(user));
   assert.ok(user.rooms.has(room));
@@ -127,12 +129,14 @@ test('joinRoom/leaveRoom manage memberships', () => {
 });
 
 test('sendMessage pushes message and emits to members', () => {
-  const alice = chat.getUser('alice');
+  const alice = chat.getUser('alice', crypto.randomUUID());
   const general = chat.joinRoom(alice, 'general');
 
   let received = null;
-  alice.emit = (event, data) => {
-    received = { event, data };
+  alice.client = {
+    emit: (event, data) => {
+      received = { event, data };
+    },
   };
 
   chat.sendMessage(general, alice, 'Hello');
@@ -145,14 +149,16 @@ test('sendMessage pushes message and emits to members', () => {
 });
 
 test('deleteMessage marks message content as deleted and emits', () => {
-  const alice = chat.getUser('alice');
+  const alice = chat.getUser('alice', crypto.randomUUID());
   const room = chat.joinRoom(alice, 'general');
-  alice.emit = () => {};
+  alice.client = { emit: () => {} };
   chat.sendMessage(room, alice, 'Hello');
 
   let payload = null;
-  alice.emit = (event, data) => {
-    if (event === 'chat/messageDeleted') payload = data;
+  alice.client = {
+    emit: (event, data) => {
+      if (event === 'chat/messageDeleted') payload = data;
+    },
   };
   chat.deleteMessage(room, alice, 0);
   assert.equal(room.messages[0].content, '[deleted]');
@@ -161,14 +167,16 @@ test('deleteMessage marks message content as deleted and emits', () => {
 });
 
 test('toggleReaction toggles uuid in vote set and updates count', () => {
-  const alice = chat.getUser('alice');
+  const alice = chat.getUser('alice', crypto.randomUUID());
   const room = chat.joinRoom(alice, 'general');
-  alice.emit = () => {};
+  alice.client = { emit: () => {} };
   chat.sendMessage(room, alice, 'Hello');
 
   let last;
-  alice.emit = (event, data) => {
-    if (event === 'chat/reaction') last = data;
+  alice.client = {
+    emit: (event, data) => {
+      if (event === 'chat/reaction') last = data;
+    },
   };
 
   chat.toggleReaction(room, alice, 0, '👍');
@@ -180,9 +188,10 @@ test('toggleReaction toggles uuid in vote set and updates count', () => {
 });
 
 test('saveData writes current state to files', async () => {
-  const alice = chat.getUser('alice');
+  const uuid = crypto.randomUUID();
+  const alice = chat.getUser('alice', uuid);
   const room = chat.joinRoom(alice, 'general');
-  alice.emit = () => {};
+  alice.client = { emit: () => {} };
   chat.sendMessage(room, alice, 'Test message');
 
   await chat.saveData();
@@ -197,7 +206,7 @@ test('saveData writes current state to files', async () => {
   assert.ok(savedUsers);
   assert.ok(savedUsers.alice);
   assert.equal(savedUsers.alice.nick, 'alice');
-  assert.equal(typeof savedUsers.alice.uuid, 'string');
+  assert.equal(savedUsers.alice.uuid, uuid);
   assert.ok(Array.isArray(savedUsers.alice.rooms));
   assert.equal(savedUsers.alice.rooms[0], 'general');
 });
