@@ -24,10 +24,10 @@
     this.rooms.delete(roomName);
   },
 
-  getUser(nick, uuid = node.crypto.randomUUID()) {
+  getUser(nick, uuid) {
     let user = this.users.get(nick);
-    if (user) return user;
-    user = { nick, uuid, rooms: new Set() };
+    if (user) return user.uuid === uuid ? user : null;
+    user = { nick, uuid, rooms: new Set(), client: null };
     this.users.set(nick, user);
     return user;
   },
@@ -54,8 +54,9 @@
     const votes = new Map();
     const message = { nick, content, timestamp, reactions, votes };
     room.messages.push(message);
+    const event = { room: room.name, message };
     for (const user of room.users) {
-      user.emit('chat/message', { room: room.name, message });
+      if (user.client) user.client.emit('chat/message', event);
     }
   },
 
@@ -66,7 +67,7 @@
     room.messages[messageId] = { ...message, content: '[deleted]' };
     const event = { room: room.name, messageId };
     for (const user of room.users) {
-      user.emit('chat/messageDeleted', event);
+      if (user.client) user.client.emit('chat/messageDeleted', event);
     }
   },
 
@@ -84,7 +85,7 @@
     message.reactions[reaction] = count;
     const event = { room: room.name, messageId, reaction, count };
     for (const user of room.users) {
-      user.emit('chat/reaction', event);
+      if (user.client) user.client.emit('chat/reaction', event);
     }
   },
 
