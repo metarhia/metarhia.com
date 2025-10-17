@@ -41,26 +41,31 @@ WantedBy=multi-user.target
 ```
 
 Reload services
+
 ```sh
 sudo systemctl daemon-reload
 ```
 
 Enable autorun
+
 ```sh
 sudo systemctl enable metarhia-com.service
 ```
 
 Start service
+
 ```sh
 sudo systemctl start metarhia-com.service
 ```
 
 Now you can get service status
+
 ```sh
 sudo systemctl status metarhia-com-web.service
 ```
 
 And view service logs
+
 ```sh
 journalctl -u metarhia-com-web -f
 ```
