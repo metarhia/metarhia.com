@@ -3,9 +3,11 @@
   "short_name": "Metarhia",
   "start_url": "/",
   "scope": "/",
+  "lang": "en",
   "display": "standalone",
   "theme_color": "#009933",
   "background_color": "#552277",
+  "orientation": "portrait-primary",
   "description": "Metarhia community and technology stack",
   "categories": ["node.js", "javascript", "technology stack", "community"],
   "icons": [
@@ -18,6 +20,26 @@
       "src": "metarhia.png",
       "type": "image/png",
       "sizes": "256x256"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Connect WebSocket",
+      "short_name": "Connect",
+      "description": "Connect to WebSocket server",
+      "url": "/",
+      "icons": [
+        {
+          "src": "icon.svg",
+          "sizes": "96x96"
+        }
+      ]
     }
   ]
 }
