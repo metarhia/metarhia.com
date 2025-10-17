@@ -31,6 +31,7 @@ module.exports = [
         navigator: true,
         File: true,
         localStorage: true,
+        Notification: true,
       },
     },
   },
