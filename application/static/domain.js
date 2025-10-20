@@ -34,7 +34,6 @@ class ChatApplication extends Application {
     this.uuid = crypto.randomUUID();
     this.roomName = 'general';
     this.messages = [];
-    this.syncTimeout = null;
     this.config = config;
     this.metacom = null;
     this.chatApi = null;
@@ -44,7 +43,6 @@ class ChatApplication extends Application {
 
   async #initMetacom() {
     try {
-      // Initialize metacom connection
       this.metacom = Metacom.create('ws://localhost:8080/api');
       await this.metacom.load('chat');
       this.chatApi = this.metacom.api.chat;
@@ -68,7 +66,6 @@ class ChatApplication extends Application {
         this.showNotification('Connection error', 'error');
       });
 
-      // Listen for chat events
       this.chatApi.on('message', (data) => {
         this.handleNewMessage(data.message);
       });
@@ -113,10 +110,6 @@ class ChatApplication extends Application {
     this.messageInput.addEventListener('keypress', (event) => {
       if (event.key === 'Enter') this.sendMessage();
     });
-    this.usernameInput.addEventListener('blur', () => this.syncUsername());
-    this.usernameInput.addEventListener('keypress', (event) => {
-      if (event.key === 'Enter') this.syncUsername();
-    });
     this.roomInput.addEventListener('blur', () => this.updateRoomName());
     this.roomInput.addEventListener('keypress', (event) => {
       if (event.key === 'Enter') this.updateRoomName();
@@ -125,12 +118,6 @@ class ChatApplication extends Application {
     this.on('network', () => this.updateInterface());
     this.on('install', () => this.showInstallButton(true));
     this.on('installed', () => this.showInstallButton(false));
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) this.syncUsername();
-    });
-    window.addEventListener('beforeunload', () => this.syncUsername());
-    window.addEventListener('blur', () => this.syncUsername());
   }
 
   updateInterface() {
@@ -185,7 +172,6 @@ class ChatApplication extends Application {
     const newRoomName = this.roomInput.value.trim() || 'general';
     if (newRoomName === this.roomName) return;
     
-    // Leave current room if we're in one
     if (this.username && this.roomName && this.chatApi) {
       try {
         await this.chatApi.leave({ roomName: this.roomName });
@@ -197,14 +183,12 @@ class ChatApplication extends Application {
     
     this.roomName = newRoomName;
     
-    // Join new room if we're logged in
     if (this.username) {
       await this.joinRoom();
     }
   }
 
   handleNewMessage(message) {
-    // Add message to local array and render
     const messageIndex = this.messages.length;
     this.messages.push({ ...message, id: messageIndex });
     this.renderChatMessages();
@@ -253,18 +237,6 @@ class ChatApplication extends Application {
     }
   }
 
-  async syncUsername() {
-    const username = this.usernameInput.value.trim();
-    if (!username || username === this.username) return;
-    
-    if (this.syncTimeout) clearTimeout(this.syncTimeout);
-    this.syncTimeout = setTimeout(async () => {
-      const success = await this.login(username);
-      if (success) {
-        this.logger.log('Username auto-synced:', this.username);
-      }
-    }, this.config.syncTimeout);
-  }
 
   async sendMessage() {
     const content = this.messageInput.value.trim();
@@ -321,7 +293,6 @@ class ChatApplication extends Application {
     div.querySelector('.timestamp').textContent = timestamp;
     div.querySelector('.content').textContent = message.content;
     
-    // Show delete button only for own messages
     const deleteBtn = div.querySelector('.delete-btn');
     if (message.nick === this.username) {
       deleteBtn.classList.remove('hidden');
@@ -421,6 +392,6 @@ class ChatApplication extends Application {
 }
 
 const logger = new Logger('output');
-const app = new ChatApplication({ logger, syncTimeout: 2000 });
+const app = new ChatApplication({ logger });
 
 export { ChatApplication, app };
