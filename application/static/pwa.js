@@ -1,9 +1,7 @@
-const generateId = () => Math.random().toString(36).substr(2, 9);
-
 const getClientId = () => {
   let clientId = localStorage.getItem('clientId');
   if (!clientId) {
-    clientId = generateId();
+    clientId = crypto.randomUUID();
     localStorage.setItem('clientId', clientId);
   }
   return clientId;
@@ -158,7 +156,7 @@ class Application extends EventEmitter {
   async notify(title, text) {
     const caption = title || 'PWA Example';
     const body = text || 'This is a test notification from the PWA!';
-    const options = { body, icon: '/icon.svg', badge: '/icon.svg' };
+    const options = { body, icon: '/favicon.svg', badge: '/icon.svg' };
     const notification = new Notification(caption, options);
     notification.onclick = () => {
       window.focus();
@@ -168,4 +166,4 @@ class Application extends EventEmitter {
   }
 }
 
-export { Application, generateId };
+export { Application };

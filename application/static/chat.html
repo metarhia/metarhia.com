@@ -11,8 +11,8 @@
   <title>PWA - Progressive Web Application</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="icon" type="image/svg+xml" href="icon.svg" />
-  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="favicon.svg" />
 </head>
 <body>
   <div class="app-container">
@@ -32,6 +32,7 @@
       </div>
       <div class="user-input">
         <input type="text" id="username-input" placeholder="Enter your username..." />
+        <input type="text" id="room-input" placeholder="Room name (default: general)" value="general" />
       </div>
       <div class="message-input">
         <input type="text" id="message-input" placeholder="Enter your message..." />
@@ -55,6 +56,7 @@
       <div class="message-header">
         <span class="username"></span>
         <span class="timestamp"></span>
+        <button class="delete-btn hidden" title="Delete message">×</button>
       </div>
       <div class="content"></div>
       <div class="reactions"></div>

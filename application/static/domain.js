@@ -1,4 +1,5 @@
-import { Application, generateId } from './pwa.js';
+import { Application } from './pwa.js';
+import { Metacom } from './metacom.js';
 
 class Logger {
   #output;
@@ -30,8 +31,60 @@ class ChatApplication extends Application {
   constructor(config = {}) {
     super(config);
     this.username = '';
+    this.uuid = crypto.randomUUID();
+    this.roomName = 'general';
+    this.messages = [];
     this.syncTimeout = null;
     this.config = config;
+    this.metacom = null;
+    this.chatApi = null;
+    this.connected = false;
+    this.#initMetacom();
+  }
+
+  async #initMetacom() {
+    try {
+      // Initialize metacom connection
+      this.metacom = Metacom.create('ws://localhost:8080/api');
+      await this.metacom.load('chat');
+      this.chatApi = this.metacom.api.chat;
+      
+      this.metacom.on('open', () => {
+        this.connected = true;
+        this.updateInterface();
+        this.logger.log('Metacom connected');
+        this.showNotification('Connected to chat server', 'success');
+      });
+
+      this.metacom.on('close', () => {
+        this.connected = false;
+        this.updateInterface();
+        this.logger.log('Metacom disconnected');
+        this.showNotification('Disconnected from chat server', 'warning');
+      });
+
+      this.metacom.on('error', (error) => {
+        this.logger.log('Metacom error:', error);
+        this.showNotification('Connection error', 'error');
+      });
+
+      // Listen for chat events
+      this.chatApi.on('message', (data) => {
+        this.handleNewMessage(data.message);
+      });
+
+      this.chatApi.on('messageDeleted', (data) => {
+        this.handleMessageDeleted(data.messageId);
+      });
+
+      this.chatApi.on('reaction', (data) => {
+        this.handleReaction(data.messageId, data.reaction, data.count);
+      });
+
+    } catch (error) {
+      this.logger.log('Failed to initialize metacom:', error);
+      this.showNotification('Failed to connect to chat server', 'error');
+    }
   }
 
   getElements() {
@@ -42,6 +95,7 @@ class ChatApplication extends Application {
     this.sendBtn = document.getElementById('send-btn');
     this.messageInput = document.getElementById('message-input');
     this.usernameInput = document.getElementById('username-input');
+    this.roomInput = document.getElementById('room-input');
     this.connectionStatus = document.getElementById('connection-status');
     this.installStatus = document.getElementById('install-status');
     this.notification = document.getElementById('notification');
@@ -63,6 +117,10 @@ class ChatApplication extends Application {
     this.usernameInput.addEventListener('keypress', (event) => {
       if (event.key === 'Enter') this.syncUsername();
     });
+    this.roomInput.addEventListener('blur', () => this.updateRoomName());
+    this.roomInput.addEventListener('keypress', (event) => {
+      if (event.key === 'Enter') this.updateRoomName();
+    });
 
     this.on('network', () => this.updateInterface());
     this.on('install', () => this.showInstallButton(true));
@@ -83,14 +141,128 @@ class ChatApplication extends Application {
     this.connectionStatus.className = `status-indicator ${connected}`;
   }
 
-  syncUsername() {
+  async login(username) {
+    if (!this.chatApi) {
+      this.showNotification('Not connected to server', 'error');
+      return false;
+    }
+    
+    try {
+      const result = await this.chatApi.login({ nick: username, uuid: this.uuid });
+      if (result.success) {
+        this.username = username;
+        this.logger.log('Logged in as:', username);
+        this.showNotification(`Logged in as ${username}`, 'success');
+        await this.joinRoom();
+        return true;
+      } else {
+        this.showNotification('Login failed', 'error');
+        return false;
+      }
+    } catch (error) {
+      this.logger.log('Login error:', error);
+      this.showNotification('Login error', 'error');
+      return false;
+    }
+  }
+
+  async joinRoom() {
+    if (!this.chatApi || !this.username) return;
+    
+    try {
+      const result = await this.chatApi.join({ roomName: this.roomName });
+      if (result.success) {
+        this.messages = result.messages || [];
+        this.renderChatMessages();
+        this.logger.log('Joined room:', this.roomName);
+      }
+    } catch (error) {
+      this.logger.log('Join room error:', error);
+    }
+  }
+
+  async updateRoomName() {
+    const newRoomName = this.roomInput.value.trim() || 'general';
+    if (newRoomName === this.roomName) return;
+    
+    // Leave current room if we're in one
+    if (this.username && this.roomName && this.chatApi) {
+      try {
+        await this.chatApi.leave({ roomName: this.roomName });
+        this.logger.log('Left room:', this.roomName);
+      } catch (error) {
+        this.logger.log('Leave room error:', error);
+      }
+    }
+    
+    this.roomName = newRoomName;
+    
+    // Join new room if we're logged in
+    if (this.username) {
+      await this.joinRoom();
+    }
+  }
+
+  handleNewMessage(message) {
+    // Add message to local array and render
+    const messageIndex = this.messages.length;
+    this.messages.push({ ...message, id: messageIndex });
+    this.renderChatMessages();
+    this.logger.log('New message from:', message.nick);
+  }
+
+  handleMessageDeleted(messageId) {
+    if (this.messages[messageId]) {
+      this.messages[messageId].content = '[deleted]';
+      this.renderChatMessages();
+      this.logger.log('Message deleted:', messageId);
+    }
+  }
+
+  handleReaction(messageId, reaction, count) {
+    if (this.messages[messageId]) {
+      if (!this.messages[messageId].reactions) {
+        this.messages[messageId].reactions = {};
+      }
+      this.messages[messageId].reactions[reaction] = count;
+      this.renderChatMessages();
+      this.logger.log(`Reaction ${reaction} on message ${messageId}: ${count}`);
+    }
+  }
+
+  async deleteMessage(messageId) {
+    if (!this.chatApi || !this.connected) {
+      this.showNotification('Not connected to server', 'error');
+      return;
+    }
+
+    try {
+      const result = await this.chatApi.unsend({
+        roomName: this.roomName,
+        messageId: messageId
+      });
+      
+      if (result.success) {
+        this.logger.log('Message deleted:', messageId);
+      } else {
+        this.showNotification('Failed to delete message', 'error');
+      }
+    } catch (error) {
+      this.logger.log('Delete message error:', error);
+      this.showNotification('Failed to delete message', 'error');
+    }
+  }
+
+  async syncUsername() {
     const username = this.usernameInput.value.trim();
     if (!username || username === this.username) return;
-    this.username = username;
+    
     if (this.syncTimeout) clearTimeout(this.syncTimeout);
-    this.syncTimeout = setTimeout(() => {
-      this.post({ type: 'username', data: this.username });
-      this.logger.log('Username auto-synced:', this.username);
+    this.syncTimeout = setTimeout(async () => {
+      const success = await this.login(username);
+      if (success) {
+        this.logger.log('Username auto-synced:', this.username);
+      }
     }, this.config.syncTimeout);
   }
 
@@ -101,28 +273,39 @@ class ChatApplication extends Application {
       this.showNotification('Please enter a message', 'warning');
       return;
     }
-    this.syncUsername();
+    
     if (!this.username) {
       this.showNotification('Please enter a username', 'warning');
       return;
     }
-    const delta = this.addMessage(content);
-    this.post({ type: 'delta', data: [delta] });
-    if (this.connected) {
-      this.logger.log('Sent message:', content);
-      this.showNotification('Message sent!', 'success');
-    } else {
-      this.logger.log('Message queued (offline):', content);
-      this.showNotification('Message queued - will send when online', 'info');
+
+    if (!this.chatApi || !this.connected) {
+      this.showNotification('Not connected to server', 'error');
+      return;
     }
-    this.renderChatMessages();
+
+    try {
+      const result = await this.chatApi.send({ 
+        roomName: this.roomName, 
+        content: content 
+      });
+      
+      if (result.success) {
+        this.logger.log('Sent message:', content);
+        this.showNotification('Message sent!', 'success');
+      } else {
+        this.showNotification('Failed to send message', 'error');
+      }
+    } catch (error) {
+      this.logger.log('Send message error:', error);
+      this.showNotification('Failed to send message', 'error');
+    }
   }
 
   renderChatMessages() {
     this.chatMessages.innerHTML = '';
-    const items = Array.from(this.state.values());
-    items.sort((a, b) => b.timestamp - a.timestamp);
-    for (const message of items) {
+    
+    for (const message of sortedMessages) {
       const el = this.createMessageElement(message);
       this.addReactionHandlers(el);
       this.chatMessages.appendChild(el);
@@ -133,10 +316,18 @@ class ChatApplication extends Application {
   createMessageElement(message) {
     const el = this.messageTemplate.content.cloneNode(true);
     const div = el.querySelector('.chat-message');
-    div.querySelector('.username').textContent = message.username;
+    div.querySelector('.username').textContent = message.nick;
     const timestamp = new Date(message.timestamp).toLocaleString();
     div.querySelector('.timestamp').textContent = timestamp;
     div.querySelector('.content').textContent = message.content;
+    
+    // Show delete button only for own messages
+    const deleteBtn = div.querySelector('.delete-btn');
+    if (message.nick === this.username) {
+      deleteBtn.classList.remove('hidden');
+      deleteBtn.addEventListener('click', () => this.deleteMessage(message.id));
+    }
+    
     const reactions = div.querySelector('.reactions');
     this.addReactionButtons(reactions, message);
     return div;
@@ -166,18 +357,28 @@ class ChatApplication extends Application {
     const reactionBtns = el.querySelectorAll('.reaction-btn');
     for (const btn of reactionBtns) {
       const { messageId, reaction } = btn.dataset;
-      btn.addEventListener('click', () => {
-        const record = { messageId, reaction };
-        const delta = { strategy: 'counter', entity: 'reaction', record };
-        const message = this.state.get(messageId);
-        if (message) {
-          if (!message.reactions) message.reactions = {};
-          const count = message.reactions[reaction] || 0;
-          message.reactions[reaction] = count + 1;
-          this.renderChatMessages();
+      btn.addEventListener('click', async () => {
+        if (!this.chatApi || !this.connected) {
+          this.showNotification('Not connected to server', 'error');
+          return;
         }
-        this.post({ type: 'delta', data: [delta] });
-        this.logger.log('Added reaction:', reaction, 'to message:', messageId);
+
+        try {
+          const result = await this.chatApi.reaction({
+            roomName: this.roomName,
+            messageId: parseInt(messageId),
+            reaction: reaction
+          });
+          
+          if (result.success) {
+            this.logger.log('Added reaction:', reaction, 'to message:', messageId);
+          } else {
+            this.showNotification('Failed to add reaction', 'error');
+          }
+        } catch (error) {
+          this.logger.log('Reaction error:', error);
+          this.showNotification('Failed to add reaction', 'error');
+        }
       });
     }
   }
@@ -212,99 +413,14 @@ class ChatApplication extends Application {
   }
 
   clearDatabase() {
-    this.logger.log('Requesting database clear...');
-    this.clearMessagesBtn.disabled = true;
-    this.clearMessagesBtn.textContent = 'Clearing...';
-    this.showNotification('Database clear requested', 'info');
-    this.post({ type: 'clearDatabase' });
-  }
-
-  addMessage(content) {
-    const id = generateId();
-    const username = this.username;
-    const timestamp = Date.now();
-    const reactions = { ...REACTIONS };
-    const message = { id, username, timestamp, content, reactions };
-    this.state.set(id, message);
-    return { strategy: 'lww', entity: 'message', record: message };
+    this.logger.log('Clearing local messages...');
+    this.messages = [];
+    this.renderChatMessages();
+    this.showNotification('Messages cleared', 'success');
   }
 }
 
 const logger = new Logger('output');
 const app = new ChatApplication({ logger, syncTimeout: 2000 });
-
-app.on('message', (data) => {
-  app.showNotification(`Message: ${data.content}`, 'info');
-  app.logger.log('Message:', data.content);
-});
-
-app.on('status', (data) => {
-  if (data.connected) {
-    app.logger.log('Websocket connected');
-    app.showNotification('Websocket connected', 'success');
-  } else {
-    app.logger.log('Websocket disconnected');
-    app.showNotification('Websocket disconnected', 'warning');
-  }
-  app.updateInterface();
-});
-
-app.on('state', (state) => {
-  app.state.clear();
-  for (const [key, value] of Object.entries(state)) {
-    app.state.set(key, value);
-  }
-  app.renderChatMessages();
-  app.logger.log('State updated from worker');
-});
-
-app.on('username', (data) => {
-  app.username = data;
-  app.usernameInput.value = data;
-  app.logger.log('Username updated from other tab:', data);
-  app.showNotification('Username updated from other tab: ' + data);
-});
-
-app.on('cacheUpdated', () => {
-  app.logger.log('Cache updated successfully');
-  app.showNotification('Cache updated successfully!', 'success');
-  app.updateCacheBtn.disabled = false;
-  app.updateCacheBtn.textContent = 'Update Cache';
-});
-
-app.on('cacheUpdateFailed', (data) => {
-  app.logger.log('Cache update failed:', data.error);
-  app.showNotification('Cache update failed', 'error');
-  app.updateCacheBtn.disabled = false;
-  app.updateCacheBtn.textContent = 'Update Cache';
-});
-
-app.on('databaseCleared', () => {
-  app.state.clear();
-  app.renderChatMessages();
-  app.logger.log('Database cleared successfully');
-  app.showNotification('Database cleared successfully!', 'success');
-  app.clearMessagesBtn.disabled = false;
-  app.clearMessagesBtn.textContent = 'Clear Database';
-});
-
-app.on('delta', (data) => {
-  for (const delta of data) {
-    const { strategy, entity, record } = delta;
-    if (entity === 'message' && strategy === 'lww') {
-      app.state.set(record.id, record);
-      app.logger.log('Message updated from CRDT:', record.id);
-    } else if (entity === 'reaction' && strategy === 'counter') {
-      const { messageId, reaction } = record;
-      const message = app.state.get(messageId);
-      if (!message) continue;
-      if (!message.reactions) message.reactions = {};
-      const count = message.reactions[reaction] || 0;
-      message.reactions[reaction] = count + 1;
-      app.logger.log(`Reaction from CRDT: ${reaction} for: ${messageId}`);
-    }
-  }
-  app.renderChatMessages();
-});
 
 export { ChatApplication, app };
