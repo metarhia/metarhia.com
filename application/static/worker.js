@@ -3,18 +3,21 @@ const CACHE = 'v1';
 const ASSETS = [
   '/',
   '/index.html',
+  '/chat.html',
   '/pwa.js',
   '/domain.js',
   '/worker.js',
   '/manifest.json',
-  '/icon.svg',
   '/404.html',
   '/console.css',
+  '/styles.css',
   '/events.js',
   '/console.js',
   '/metacom.js',
+  '/streams.js',
   '/favicon.ico',
   '/favicon.png',
+  '/favicon.svg',
   '/metarhia.png',
   '/metarhia.svg',
 ];
@@ -330,4 +333,4 @@ self.addEventListener('message', (event) => {
   if (handler) handler(event.source, data);
 });
 
-connect();
+// connect();

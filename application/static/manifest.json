@@ -36,7 +36,7 @@
       "url": "/",
       "icons": [
         {
-          "src": "icon.svg",
+          "src": "favicon.svg",
           "sizes": "96x96"
         }
       ]
