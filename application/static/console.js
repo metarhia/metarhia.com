@@ -7,38 +7,6 @@ const DIGIT = '0123456789';
 const CHARS = ALPHA + DIGIT;
 const TIME_CHAR = 5;
 
-const KEY_CODE = {
-  BACKSPACE: 8,
-  TAB: 9,
-  ENTER: 13,
-  PAUSE: 19,
-  ESC: 27,
-  SPACE: 32,
-  PGUP: 33,
-  PGDN: 34,
-  END: 35,
-  HOME: 36,
-  LT: 37,
-  UP: 38,
-  RT: 39,
-  DN: 40,
-  INS: 45,
-  DEL: 46,
-  F1: 112,
-  F2: 113,
-  F3: 114,
-  F4: 115,
-  F5: 116,
-  F6: 117,
-  F7: 118,
-  F8: 119,
-  F9: 120,
-  F10: 121,
-  F11: 122,
-  F12: 123,
-  ACCENT: 192,
-};
-
 const KEYBOARD_LAYOUT = [
   '1234567890',
   'qwertyuiop',
@@ -46,36 +14,17 @@ const KEYBOARD_LAYOUT = [
   '^zxcvbnm_>',
 ];
 
-const KEY_NAME = {};
-for (const keyName in KEY_CODE) KEY_NAME[KEY_CODE[keyName]] = keyName;
+const IS_MOBILE = 'maxTouchPoints' in window || navigator.maxTouchPoints > 0;
 
-const pad = (padChar, length) => new Array(length + 1).join(padChar);
+const pad = (padChar, length) => padChar.repeat(length);
 
-const { userAgent } = navigator;
-
-const isMobile = () =>
-  userAgent.match(/Android/i) ||
-  userAgent.match(/webOS/i) ||
-  userAgent.match(/iPhone/i) ||
-  userAgent.match(/iPad/i) ||
-  userAgent.match(/iPod/i) ||
-  userAgent.match(/BlackBerry/i) ||
-  userAgent.match(/Windows Phone/i);
-
-const sleep = (msec) =>
-  new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, msec);
-  });
+const sleep = (msec) => new Promise((resolve) => setTimeout(resolve, msec));
 
 const urlKind = (url) => {
   if (url.startsWith('mailto:')) return 'mail';
-  if (url.startsWith('http:')) return 'web';
-  if (url.startsWith('https:')) return 'web';
+  if (url.startsWith('http')) return 'web';
   const k = url.indexOf('/');
-  if (k === -1) return 'base';
-  return url.substring(0, k);
+  return k === -1 ? 'base' : url.substring(0, k);
 };
 
 const followLink = async (event) => {
@@ -110,17 +59,17 @@ const moreLink = (event) => {
 };
 
 const inputKeyboardEvents = {
-  ESC() {
+  Escape() {
     application.clear();
     application.inputSetValue('');
   },
-  SPACE() {
+  Space() {
     followLastMore();
   },
-  BACKSPACE() {
+  Backspace() {
     application.inputSetValue(application.controlInput.inputValue.slice(0, -1));
   },
-  ENTER() {
+  Enter() {
     let value = application.controlInput.inputValue;
     if (application.controlInput.inputType === 'masked') {
       value = pad('*', value.length);
@@ -130,7 +79,7 @@ const inputKeyboardEvents = {
     application.controlInput.inputActive = false;
     application.controlInput.inputCallback(null, value);
   },
-  CAPS() {
+  CapsLock() {
     if (application.keyboard.controlKeyboard.className === 'caps') {
       application.keyboard.controlKeyboard.className = '';
     } else {
@@ -138,7 +87,6 @@ const inputKeyboardEvents = {
     }
   },
   KEY(char) {
-    // Alpha or Digit
     if (application.keyboard.controlKeyboard.className === 'caps') {
       char = char.toUpperCase();
     }
@@ -146,37 +94,34 @@ const inputKeyboardEvents = {
   },
 };
 
-document.onkeydown = (event) => {
+document.addEventListener('keydown', (event) => {
   if (application.controlInput.inputActive) {
-    const keyName = KEY_NAME[event.keyCode];
-    const fn = inputKeyboardEvents[keyName];
+    const fn = inputKeyboardEvents[event.code];
     if (fn) {
       fn();
-      return false;
+      event.preventDefault();
     }
   }
-  return true;
-};
+});
 
-document.onkeypress = (event) => {
+document.addEventListener('keypress', (event) => {
   if (application.controlInput.inputActive) {
     const fn = inputKeyboardEvents['KEY'];
-    const char = String.fromCharCode(event.keyCode);
+    const char = event.key;
     if (CHARS.includes(char) && fn) {
       fn(char);
-      return false;
+      event.preventDefault();
     }
   }
-  return true;
-};
+});
 
 const keyboardClick = (e) => {
   let char = e.target.inputChar;
   if (char === '_') char = ' ';
   let keyName = 'KEY';
-  if (char === '<') keyName = 'BACKSPACE';
-  if (char === '>') keyName = 'ENTER';
-  if (char === '^') keyName = 'CAPS';
+  if (char === '<') keyName = 'Backspace';
+  if (char === '>') keyName = 'Enter';
+  if (char === '^') keyName = 'CapsLock';
   const fn = inputKeyboardEvents[keyName];
   if (fn) fn(char);
   e.stopPropagation();
@@ -186,7 +131,7 @@ const keyboardClick = (e) => {
 class Keyboard {
   constructor() {
     this.controlKeyboard = document.getElementById('controlKeyboard');
-    if (!isMobile()) return;
+    if (!IS_MOBILE) return;
     for (let i = 0; i < KEYBOARD_LAYOUT.length; i++) {
       const keyboardLine = KEYBOARD_LAYOUT[i];
       const elementLine = document.createElement('div');
@@ -319,7 +264,7 @@ class Application {
     const label = '--More--';
     element.innerHTML = `<a data-text="${text}" class="more">${label}</a>`;
     const [link] = element.querySelectorAll('a');
-    link.onclick = moreLink;
+    link.addEventListener('click', moreLink);
     const top = this.controlBrowse.scrollHeight;
     this.controlBrowse.scrollTop = top;
     this.scroller.scrollBottom();
@@ -392,7 +337,7 @@ class Application {
     }
     const links = element.querySelectorAll('a');
     for (const link of links) {
-      link.onclick = followLink;
+      link.addEventListener('click', followLink);
     }
   }
 }
